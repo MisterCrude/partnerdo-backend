@@ -21,7 +21,7 @@ INSTALLED_APPS = [
     'django_seed',
 
     # Local Apps
-    'apps.filter',
+    'apps.proposal',
     'apps.user',
 ]
 
