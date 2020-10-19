@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import City, Service, CityArea
+from .models import City, CityArea
 
 
 class CitySerializer(serializers.ModelSerializer):
@@ -14,9 +14,3 @@ class CitySerializer(serializers.ModelSerializer):
     class Meta:
         model = City
         fields = ('id', 'name', 'areas')
-
-
-class ServiceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Service
-        fields = '__all__'

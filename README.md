@@ -50,3 +50,4 @@
 ### Links
 
 - [Murr project example](https://gitlab.com/Murrengan/murr)
+- [Docker + Django + React + PostgreSQL](https://www.youtube.com/watch?v=hwHRI59iGlw&ab_channel=DjangoConUS)

@@ -11,9 +11,6 @@ urlpatterns = [
     path(route=r'admin/',
          view=admin.site.urls),
 
-    path(route=f'{API_PREFIX}/units/',
-         view=include('apps.unit.urls')),
-
     path(route=f'{API_PREFIX}/filters/',
          view=include('apps.filter.urls')),
 

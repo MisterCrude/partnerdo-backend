@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CityArea, Service, City
+from .models import CityArea, City
 
 
 class CityAreaInline(admin.TabularInline):
@@ -16,9 +16,4 @@ class CityAdmin(admin.ModelAdmin):
 
 @admin.register(CityArea)
 class CityAreaAdmin(admin.ModelAdmin):
-    readonly_fields = ["id"]
-
-
-@admin.register(Service)
-class ServiceAdmin(admin.ModelAdmin):
     readonly_fields = ["id"]
