@@ -11,9 +11,6 @@ urlpatterns = [
     path(route=r'admin/',
          view=admin.site.urls),
 
-    path(route=f'{API_PREFIX}/filters/',
-         view=include('apps.filter.urls')),
-
     path(route=f'{API_PREFIX}/token/',
          view=jwt_views.TokenObtainPairView.as_view(),
          name='obtain-token-pair'),
