@@ -1,8 +1,8 @@
 from drf_multiple_model.views import ObjectMultipleModelAPIView
 from rest_framework import permissions
 
-from .serializers import CitySerializer, ServiceSerializer
-from .models import City, Service
+from .serializers import CitySerializer
+from .models import City
 
 
 class FilterAPIView(ObjectMultipleModelAPIView):
@@ -12,7 +12,7 @@ class FilterAPIView(ObjectMultipleModelAPIView):
          'serializer_class': CitySerializer,
          'label': 'cities'},
 
-        {'queryset': Service.objects.all(),
-         'serializer_class': ServiceSerializer,
-         'label': 'services'},
+        # {'queryset': Service.objects.all(),
+        #  'serializer_class': ServiceSerializer,
+        #  'label': 'services'},
     )
