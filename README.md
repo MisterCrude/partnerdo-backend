@@ -1,4 +1,4 @@
-# Backend-end part of _partnerdo_ application
+# Backend-end _partnerdo.pl_
 
 ### Install
 
@@ -28,10 +28,12 @@
 
 ### DB Seed
 
-- `$ python manage.py seed <app_name> [--number=<nubber_of_seeds>]`
+- `$ python manage.py seed <app_name> [--number=<nuber_of_seeds>]`
 
+### Documentation
+
+- [Tools](docs/tools.md)
+- [Application architecture](docs/application.md)
 - [Development](docs/development.md)
 - [Deployment](docs/deployment.md)
 - [Testing](docs/testing.md)
-- [Application architecture](docs/application.md)
-- [Tools](docs/tools.md)
