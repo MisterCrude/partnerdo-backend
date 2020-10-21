@@ -14,15 +14,24 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
     # Third-Party Apps
-    "rest_framework",
+    'rest_framework',
+    'rest_framework.authtoken',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+
+    'dj_rest_auth.registration',
+    'dj_rest_auth',
+
     'drf_multiple_model',
     'django_seed',
 
     # Local Apps
     'apps.proposal',
-    'apps.user',
 ]
 
 MIDDLEWARE = [
@@ -79,11 +88,22 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# TODO temporary solutions for allauth register mail sanding
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# AUTH_USER_MODEL = "user.CustomUser"
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication'
     ],
 }
+
+REST_USE_JWT = True
+
+JWT_AUTH_COOKIE = 'jwt-auth'
+
+SITE_ID = 1
 
 
 LANGUAGE_CODE = 'en-us'
