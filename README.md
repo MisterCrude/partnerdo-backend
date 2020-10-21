@@ -20,6 +20,7 @@
 - `$ python manage.py migrate [<app_name>]`
 - `$ python manage.py createsuperuser`
 - `$ python manage.py shell`
+- `$ python manage.py syncdb`
 - `$ export PYTHONDONTWRITEBYTECODE=1`
 
 ### Run project
