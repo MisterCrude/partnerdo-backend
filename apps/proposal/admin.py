@@ -1,10 +1,15 @@
 import os
+from django import forms
 from django.contrib import admin
 from django.conf import settings
 from django.utils.safestring import mark_safe
 
 from .models import Proposal, City, CityArea, Category
 
+
+##
+# City
+##
 
 class CityAreaInline(admin.TabularInline):
     readonly_fields = ["id"]
@@ -18,8 +23,23 @@ class CityAdmin(admin.ModelAdmin):
     fields = ("id", "name")
     inlines = [CityAreaInline]
 
-    def property_value(self, obj):
-        return obj.get_value()
+
+##
+# CityArea
+##
+
+@admin.register(CityArea)
+class CityAreaAdmin(admin.ModelAdmin):
+    readonly_fields = ["id"]
+
+
+##
+# Proposal
+##
+
+class CityAreaChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return f"{obj.city} > {obj.name}"
 
 
 @admin.register(Category)
@@ -45,6 +65,11 @@ class ProposalAdmin(admin.ModelAdmin):
             "fields": ("updated", "created"),
         }),
     )
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'city_area':
+            return CityAreaChoiceField(queryset=CityArea.objects.all())
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def image_thumb(self, obj):
         thumb_path = f'{settings.BASE_DIR}{obj.logo.url}'
