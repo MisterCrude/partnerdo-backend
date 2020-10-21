@@ -12,15 +12,15 @@ from .models import Proposal, City, CityArea, Category
 ##
 
 class CityAreaInline(admin.TabularInline):
-    readonly_fields = ["id"]
+    readonly_fields = ['id']
     model = CityArea
     extra = 0
 
 
 @admin.register(City)
 class CityAdmin(admin.ModelAdmin):
-    readonly_fields = ["id"]
-    fields = ("id", "name")
+    readonly_fields = ['id']
+    fields = ('id', 'name')
     inlines = [CityAreaInline]
 
 
@@ -30,7 +30,7 @@ class CityAdmin(admin.ModelAdmin):
 
 @admin.register(CityArea)
 class CityAreaAdmin(admin.ModelAdmin):
-    readonly_fields = ["id"]
+    readonly_fields = ['id']
 
 
 ##
@@ -39,30 +39,30 @@ class CityAreaAdmin(admin.ModelAdmin):
 
 class CityAreaChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
-        return f"{obj.city} > {obj.name}"
+        return f'{obj.city} > {obj.name}'
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    # readonly_fields = ["slug"]
+    # readonly_fields = ['slug']
     pass
 
 
 @admin.register(Proposal)
 class ProposalAdmin(admin.ModelAdmin):
-    readonly_fields = ["id", "image_thumb", "created", "updated"]
+    readonly_fields = ['id', 'image_thumb', 'created', 'updated']
     fieldsets = (
         (None, {
-            "fields": ("name", "description", "author")
+            'fields': ('name', 'description', 'author')
         }),
         (None, {
-            "fields": ("image", "image_thumb"),
+            'fields': ('image', 'image_thumb'),
         }),
-        ("Location", {
-            "fields": ("city", "city_area", "location_note"),
+        ('Location', {
+            'fields': ('city', 'city_area', 'location_note'),
         }),
-        ("Dates", {
-            "fields": ("updated", "created"),
+        ('Dates', {
+            'fields': ('updated', 'created'),
         }),
     )
 
@@ -72,10 +72,10 @@ class ProposalAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def image_thumb(self, obj):
-        thumb_path = f'{settings.BASE_DIR}{obj.logo.url}'
+        thumb_path = f'{settings.BASE_DIR}{obj.image.url}'
 
         if (os.path.exists(thumb_path)):
-            render_thumb = f'<span style="width: 170px; height: 170px; display: block;"><img style="max-width: 100%; max-height: 100%;" src="{obj.logo.url}" width="{obj.logo.width}" height={obj.logo.height} /></span>'
+            render_thumb = f'<span style="width: 170px; height: 170px; display: block;"><img style="max-width: 100%; max-height: 100%;" src="{obj.image.url}" width="{obj.image.width}" height={obj.image.height} /></span>'
 
             return mark_safe(render_thumb)
         else:
