@@ -39,3 +39,9 @@ Powerful and flexible framework for building Web APIs
 ```
 A JSON Web Token authentication plugin for the Django REST Framework
 ```
+
+## [Django categories](https://github.com/callowayproject/django-categories)
+
+```
+Categories with any depth
+```

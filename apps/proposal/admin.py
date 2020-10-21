@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.utils.safestring import mark_safe
 
-from .models import Proposal, City, CityArea
+from .models import Proposal, City, CityArea, Category
 
 
 class CityAreaInline(admin.TabularInline):
@@ -20,6 +20,12 @@ class CityAdmin(admin.ModelAdmin):
 
     def property_value(self, obj):
         return obj.get_value()
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    # readonly_fields = ["slug"]
+    pass
 
 
 @admin.register(Proposal)
