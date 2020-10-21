@@ -2,25 +2,25 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
-from rest_framework_simplejwt import views as jwt_views
+
+from .views import FacebookLoginView
 
 
 API_PREFIX = 'api/v1.0'
 
 urlpatterns = [
-    path(route=r'admin/',
+    path(route=r'admingus/',
          view=admin.site.urls),
 
-    path(route=f'{API_PREFIX}/token/',
-         view=jwt_views.TokenObtainPairView.as_view(),
-         name='obtain-token-pair'),
+    path(route=f'{API_PREFIX}/auth/',
+         view=include('dj_rest_auth.urls')),
 
-    path(route=f'{API_PREFIX}/token-refresh/',
-         view=jwt_views.TokenRefreshView.as_view(),
-         name='token-refresh'),
+    path(route=f'{API_PREFIX}/auth/registration/',
+         view=include('dj_rest_auth.registration.urls')),
 
-    path(route=f'{API_PREFIX}/register/',
-         view=include('apps.user.urls'))
+    path(route=f'{API_PREFIX}/auth/facebook/',
+         view=FacebookLoginView.as_view(),
+         name='facebook-login')
 ]
 
 if settings.DEBUG:

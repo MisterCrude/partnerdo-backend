@@ -34,10 +34,12 @@ Powerful and flexible framework for building Web APIs
 
 <br/>
 
-## [Simple JWT](https://django-rest-framework-simplejwt.readthedocs.io/en/latest/)
+## [Django REST auth](https://dj-rest-auth.readthedocs.io/en/latest/index.html) + [Django simple JWT](https://github.com/SimpleJWT/django-rest-framework-simplejwt/) + [Django allauth](https://github.com/pennersr/django-allauth)
 
 ```
-A JSON Web Token authentication plugin for the Django REST Framework
+1. Authentication for Django Rest Framework
+2. A JSON Web Token authentication plugin for the Django REST Framework
+3. Integrated set of Django applications addressing authentication (ex. Facebook auth)
 ```
 
 ## [Django categories](https://github.com/callowayproject/django-categories)
