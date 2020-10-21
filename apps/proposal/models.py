@@ -14,7 +14,7 @@ class CityArea(models.Model):
 
     class Meta:
         verbose_name = 'Area'
-        verbose_name_plural = 'Areas'
+        verbose_name_plural = 'City areas'
 
 
 class City(models.Model):
@@ -49,7 +49,7 @@ class Category(models.Model):
 
     class Meta:
         unique_together = ('slug', 'parent',)
-        verbose_name_plural = "categories"
+        verbose_name_plural = 'Categories'
 
 
 class Proposal(models.Model):
