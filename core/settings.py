@@ -91,8 +91,6 @@ AUTH_PASSWORD_VALIDATORS = [
 # TODO temporary solutions for allauth register mail sanding
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# AUTH_USER_MODEL = "user.CustomUser"
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication'
