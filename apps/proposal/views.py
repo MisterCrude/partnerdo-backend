@@ -1,3 +1,10 @@
-from django.shortcuts import render
+from rest_framework import viewsets
 
-# Create your views here.
+from .serializers import ProposalSerializer
+from .models import Proposal
+
+
+class ProposalViewSet(viewsets.ModelViewSet):
+    #  permission_classes = (IsAccountAdminOrReadOnly,)
+    queryset = Proposal.objects.all().order_by('name')
+    serializer_class = ProposalSerializer
