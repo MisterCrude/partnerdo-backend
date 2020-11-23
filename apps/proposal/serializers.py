@@ -4,8 +4,8 @@ from apps.proposal.models import Proposal
 
 
 class ProposalSerializer(serializers.ModelSerializer):
-    # city = serializers.CharField(source="city.name", read_only=True)
-    # city_area = serializers.CharField(source="city_area.name", read_only=True)
+    # city = serializers.CharField(source='city.name', read_only=True)
+    # city_area = serializers.CharField(source='city_area.name', read_only=True)
 
     def to_representation(self, instance):
         rep = super(ProposalSerializer, self).to_representation(instance)

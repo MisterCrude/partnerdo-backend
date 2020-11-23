@@ -16,18 +16,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
 
     # Third-Party Apps
     'rest_framework',
     'rest_framework.authtoken',
 
     'dj_rest_auth',
-    'dj_rest_auth.registration',
 
-    'allauth',
-    'allauth.account',
 
+    # TODO remove in pord version
     'django_seed',
     'corsheaders',
 
@@ -70,7 +67,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': str(BASE_DIR / 'db.sqlite3'),
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -92,35 +89,24 @@ AUTH_PASSWORD_VALIDATORS = [
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+
 REST_FRAMEWORK = {
+    # Avoids add csrftoken to each request
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'dj_rest_auth.jwt_auth.JWTCookieAuthentication'
+        'rest_framework.authentication.TokenAuthentication'
     ],
+    # Denided acces for all resoures in across the app
+    # https://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
 }
 
 
-REST_USE_JWT = True
-
-JWT_AUTH_COOKIE = 'jwt-auth'
-
-
-SITE_ID = 1
-ACCOUNT_EMAIL_REQUIRED = True
-# ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 3
-# ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 60
-# ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"
-# ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'Europe/Warsaw'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 

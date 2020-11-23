@@ -9,5 +9,5 @@ router.register(r'', views.ProposalViewSet)
 urlpatterns = [
     path(route=r'',
          view=include(router.urls),
-         name="proposals"),
+         name='proposals'),
 ]

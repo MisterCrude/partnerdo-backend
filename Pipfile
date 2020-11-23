@@ -10,12 +10,10 @@ autopep8 = "*"
 
 [packages]
 django = "*"
-djangorestframework = "*"
-djangorestframework-simplejwt = "*"
-dj-rest-auth = {extras = ["with_social"], version = "*"}
-django-allauth = "*"
+dj-rest-auth = "*"
 pillow = "*"
 django-cors-headers = "*"
+djangorestframework = "*"
 
 [requires]
 python_version = "3.8"

@@ -68,10 +68,15 @@ rmmigrations:
 clean:
 	find . -type d -name "${CACHE_DIR}" -exec rm -rf {} +
 
-clean.all:
+reset:
 	find . -type d -name "${MIGRATIONS_DIR}" -exec rm -rf {} +
 	find . -type d -name "${CACHE_DIR}" -exec rm -rf {} +
 	rm -R "db.sqlite3"
+	touch "db.sqlite3"
+	python manage.py migrate
+	python manage.py createsuperuser
+	python manage.py runserver
+	
 
 git:
 	gaa && gcmsg ${msg}

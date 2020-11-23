@@ -10,7 +10,7 @@
 - `$ source .env/bin/actiate`
 - `$ deactivate`
 
-#### _For pipenv_
+#### _For pipenv (in using)_
 
 - `pipenv install`
 - `pipenv shell`
