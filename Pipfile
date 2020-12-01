@@ -10,7 +10,7 @@ autopep8 = "*"
 
 [packages]
 django = "*"
-dj-rest-auth = "*"
+dj-rest-auth = {extras = ["with_social"], version = "*"}
 pillow = "*"
 django-cors-headers = "*"
 djangorestframework = "*"

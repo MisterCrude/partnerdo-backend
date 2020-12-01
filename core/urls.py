@@ -15,8 +15,8 @@ urlpatterns = [
     path(route=f'{API_PREFIX}/auth/',
          view=include('dj_rest_auth.urls')),
 
-    #     path(route=f'{API_PREFIX}/auth/registration/',
-    #          view=include('dj_rest_auth.registration.urls')),
+    path(route=f'{API_PREFIX}/auth/registration/',
+         view=include('dj_rest_auth.registration.urls')),
 ]
 
 if settings.DEBUG:

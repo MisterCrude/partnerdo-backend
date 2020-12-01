@@ -10,6 +10,7 @@ CORS_ALLOWED_ORIGINS = ['http://localhost:3000']
 
 
 INSTALLED_APPS = [
+    'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -22,7 +23,10 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
 
     'dj_rest_auth',
+    'dj_rest_auth.registration',
 
+    'allauth.account',
+    'allauth',
 
     # TODO remove in pord version
     'django_seed',
@@ -101,6 +105,9 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ]
 }
+
+
+SITE_ID = '1'
 
 
 LANGUAGE_CODE = 'en-us'
