@@ -93,6 +93,15 @@ AUTH_PASSWORD_VALIDATORS = [
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+# Overrides custom password validation
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 8,
+        }
+    }
+]
 
 REST_FRAMEWORK = {
     # Avoids add csrftoken to each request
