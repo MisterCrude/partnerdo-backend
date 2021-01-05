@@ -18,7 +18,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
 
     # Third-Party Apps
     'rest_framework',
@@ -121,14 +120,8 @@ REST_FRAMEWORK = {
     ]
 }
 
-REST_USE_JWT = True
-
-JWT_AUTH_COOKIE = 'jwt-auth'
 
 SITE_ID = 1
-
-
-SITE_ID = '1'
 
 
 LANGUAGE_CODE = 'en-us'
