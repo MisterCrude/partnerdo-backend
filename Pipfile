@@ -1,0 +1,21 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+flake8 = "*"
+django-seed = "*"
+autopep8 = "*"
+
+[packages]
+django = "*"
+dj-rest-auth = {extras = ["with_social"], version = "*"}
+pillow = "*"
+django-cors-headers = "*"
+djangorestframework = "*"
+psycopg2-binary = "*"
+django-seed = "*"
+
+[requires]
+python_version = "3.8"

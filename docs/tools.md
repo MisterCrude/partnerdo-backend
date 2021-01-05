@@ -34,7 +34,7 @@ Powerful and flexible framework for building Web APIs
 
 <br/>
 
-## [Django REST auth](https://dj-rest-auth.readthedocs.io/en/latest/index.html) + [Django simple JWT](https://github.com/SimpleJWT/django-rest-framework-simplejwt/) + [Django allauth](https://github.com/pennersr/django-allauth)
+## [Django REST auth](https://dj-rest-auth.readthedocs.io/en/latest/index.html) + [Django simple JWT](https://github.com/SimpleJWT/django-rest-framework-simplejwt/) + [Django allauth](https://django-allauth.readthedocs.io/en/latest/)
 
 ```
 1. Authentication for Django Rest Framework
@@ -42,8 +42,10 @@ Powerful and flexible framework for building Web APIs
 3. Integrated set of Django applications addressing authentication (ex. Facebook auth)
 ```
 
-## [Django categories](https://github.com/callowayproject/django-categories)
+### Useful links
 
-```
-Categories with any depth
-```
+- [How to use (video)](https://www.youtube.com/watch?v=PtVu04V027c&ab_channel=ProgrammingRace)
+
+# Can be used
+
+- [Registrations witout password](https://github.com/aaronn/django-rest-framework-passwordless)

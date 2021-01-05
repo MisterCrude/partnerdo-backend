@@ -44,7 +44,6 @@ class CityAreaChoiceField(forms.ModelChoiceField):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    # readonly_fields = ['slug']
     pass
 
 
@@ -53,7 +52,7 @@ class ProposalAdmin(admin.ModelAdmin):
     readonly_fields = ['id', 'image_thumb', 'created', 'updated']
     fieldsets = (
         (None, {
-            'fields': ('name', 'description', 'author')
+            'fields': ('name', 'description', 'category', 'author')
         }),
         (None, {
             'fields': ('image', 'image_thumb'),

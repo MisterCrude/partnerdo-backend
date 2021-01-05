@@ -1,13 +1,17 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '*yq$p@6lvfeck6xlpu-j@4=p)@y60g&3k+q_$u+=h0-8!or472'
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost']
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ALLOWED_ORIGINS = ['http://localhost:3000']
 
 
 INSTALLED_APPS = [
+    'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -20,21 +24,22 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
 
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-
-    'dj_rest_auth.registration',
     'dj_rest_auth',
+    'dj_rest_auth.registration',
 
-    'drf_multiple_model',
+    'allauth.account',
+    'allauth',
+
+    # TODO remove in pord version
     'django_seed',
+    'corsheaders',
 
     # Local Apps
     'apps.proposal',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -67,8 +72,12 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        "ENGINE": os.environ.get("DB_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": os.environ.get("DB_NAME", os.path.join(BASE_DIR, "db.sqlite3")),
+        "USER": os.environ.get("DB_USER", "user"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", "password"),
+        "HOST": os.environ.get("DB_HOST", "localhost"),
+        "PORT": os.environ.get("DB_PORT", "5432"),
     }
 }
 
@@ -88,13 +97,28 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# TODO temporary solutions for allauth register mail sanding
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+# Overrides custom password validation
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 8,
+        }
+    }
+]
+
 REST_FRAMEWORK = {
+    # Avoids add csrftoken to each request
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'dj_rest_auth.jwt_auth.JWTCookieAuthentication'
+        'rest_framework.authentication.TokenAuthentication'
     ],
+    # Denided acces for all resoures in across the app
+    # https://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
 }
 
 REST_USE_JWT = True
@@ -104,14 +128,13 @@ JWT_AUTH_COOKIE = 'jwt-auth'
 SITE_ID = 1
 
 
+SITE_ID = '1'
+
+
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'Europe/Warsaw'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 
