@@ -5,7 +5,7 @@ services:
     restart: always
     build: .
     env_file:
-      - ./env/.env.dev
+      - ./env/.env
     ports:
       - 127.0.0.1:8000:8000
     volumes:
@@ -33,7 +33,7 @@ services:
     networks:
       - db_network
     env_file:
-      - ./env/.env.devdb
+      - ./env/.env.database
     volumes:
       - ./db_data:/var/lib/postgresql/data
 
