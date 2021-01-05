@@ -39,7 +39,18 @@
 
 ### Run project
 
-- `$ python manage.py runserver`
+- `$ make run`
+
+#### With docker
+
+- `$ make up`
+- `$ make login`
+- `$ make activate`
+- `$ make run`
+
+### Deployment
+
+- `$ python manage.py check --deploy`
 
 ### DB Seed
 

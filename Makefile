@@ -1,66 +1,20 @@
-install:
-	pipenv install
-
-activate:
-	pipenv shell
-
-add:
-	pipenv install ${lib}
-	pipenv check
-
-addd:
-	pipenv install ${lib} --dev
-	pipenv check
-
-rm:
-	pipenv uninstall ${lib}
-
-rma:
-	pipenv uninstall --all
-
-gr:
-	pipenv graph 
-
-
 # Manage
-
 start:
 	python manage.py migrate
 	python manage.py createsuperuser
 	python manage.py runserver
 
-manage:
-	python manage.py ${cmd}
-
-migrate:
-	python manage.py migrate
-
-migrations:
-	python manage.py makemigrations ${app}
-
-superuser:
-	python manage.py createsuperuser
-
-startapp:
-	python manage.py startapp ${app}
-
 run:
-	python manage.py runserver
+	python manage.py runserver 0.0.0.0:8000
 
 seed:
 	python manage.py seed ${app} --number=100
 
 
-# Deploy
-
-check:
-	python manage.py check --deploy
-
-
 # Tools
-
 MIGRATIONS_DIR:=migrations
 CACHE_DIR:=__pycache__
+COMPOSE = docker-compose -f docker-compose.yml
 
 rmmigrations:
 	find . -type d -name "${MIGRATIONS_DIR}" -exec rm -rf {} +
@@ -76,7 +30,9 @@ reset:
 	python manage.py migrate
 	python manage.py createsuperuser
 	python manage.py runserver
-	
 
-git:
-	gaa && gcmsg ${msg}
+up: 
+	${COMPOSE} up
+
+login: 
+	docker exec -it partnerdo-backend_web_1 bash

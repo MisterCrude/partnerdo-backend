@@ -9,7 +9,6 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-env/
 build/
 develop-eggs/
 dist/
@@ -82,13 +81,13 @@ celerybeat-schedule
 
 # dotenv
 .env
+.env.database
 
 # virtualenv
 .venv
 venv/
-ENV/
-env/
 .vscode
+config/
 
 # Spyder project settings
 .spyderproject
@@ -116,3 +115,5 @@ media/
 # **/migrations/**
 # !**/migrations
 # !**/migrations/__init__.py
+
+db_data

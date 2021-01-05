@@ -14,6 +14,8 @@ dj-rest-auth = {extras = ["with_social"], version = "*"}
 pillow = "*"
 django-cors-headers = "*"
 djangorestframework = "*"
+psycopg2-binary = "*"
+django-seed = "*"
 
 [requires]
 python_version = "3.8"

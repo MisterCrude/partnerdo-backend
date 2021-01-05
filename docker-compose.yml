@@ -1,0 +1,47 @@
+version: "3"
+
+services:
+  web:
+    restart: always
+    build: .
+    env_file:
+      - ./env/.env.dev
+    ports:
+      - 127.0.0.1:8000:8000
+    volumes:
+      - ./:/code/
+    networks:
+      - db_network
+      - cache_network
+    depends_on:
+      - db
+      - cache
+    tty: true
+    stdin_open: true
+
+  cache:
+    restart: always
+    image: redis:5
+    networks:
+      - cache_network
+    ports:
+      - 6379:6379
+
+  db:
+    restart: always
+    image: postgres:latest
+    networks:
+      - db_network
+    env_file:
+      - ./env/.env.devdb
+    volumes:
+      - ./db_data:/var/lib/postgresql/data
+
+networks:
+  db_network:
+    driver: bridge
+  cache_network:
+    driver: bridge
+
+volumes:
+  db_data:
