@@ -45,7 +45,6 @@
 
 - `$ make up`
 - `$ make login`
-- `$ make activate`
 - `$ make run`
 
 ### Deployment

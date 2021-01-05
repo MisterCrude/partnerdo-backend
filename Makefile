@@ -7,6 +7,9 @@ start:
 run:
 	python manage.py runserver 0.0.0.0:8000
 
+activate:
+	pipenv shell
+
 seed:
 	python manage.py seed ${app} --number=100
 
