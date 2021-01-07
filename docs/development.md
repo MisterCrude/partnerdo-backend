@@ -2,7 +2,11 @@
 
 In local environment application works inside 3 separate docker containers. For Django app, for redis and for postgres. Postgres and Django have persist data by volume
 
-## First run
+In docker container no need to run pipenv shell because local inveromet is OS creted in container. All dependencies installed directly here.
+
+Pipenv only needed for linked to VSC workspece
+
+## Setup
 
 ### 1. Create pipenv for VSC interpreter (optional step)
 
@@ -17,6 +21,7 @@ In local environment application works inside 3 separate docker containers. For 
 - `$ docker-compose down -v` stop containers and remove volume for db
 - `$ make up`
 - `$ make login`
+- `$ python manage.py makemigrations [<app_name>, <app_name>]`
 - `$ make start`
 - `$ make run`
 

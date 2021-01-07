@@ -35,6 +35,7 @@ INSTALLED_APPS = [
 
     # Local Apps
     'apps.proposal',
+    'apps.userprofile',
 ]
 
 MIDDLEWARE = [
@@ -120,6 +121,11 @@ REST_FRAMEWORK = {
     ]
 }
 
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'apps.userprofile.serializers.ProfileSerializer',
+}
+
+AUTH_USER_MODEL = 'userprofile.Profile'
 
 SITE_ID = 1
 

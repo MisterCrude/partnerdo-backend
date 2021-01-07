@@ -12,6 +12,11 @@ activate:
 seed:
 	python manage.py seed ${app} --number=100
 
+migrate:
+	python manage.py migrate
+
+migrations:
+	python manage.py makemigrations
 
 # Tools
 MIGRATIONS_DIR:=migrations
@@ -27,8 +32,8 @@ clean:
 reset:
 	find . -type d -name "${MIGRATIONS_DIR}" -exec rm -rf {} +
 	find . -type d -name "${CACHE_DIR}" -exec rm -rf {} +
-	rm -R "db.sqlite3"
-	touch "db.sqlite3"
+	# rm -R "db.sqlite3"
+	# touch "db.sqlite3"
 	python manage.py migrate
 	python manage.py createsuperuser
 	python manage.py runserver

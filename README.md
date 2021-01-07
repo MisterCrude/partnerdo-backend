@@ -28,6 +28,8 @@
 - `$ django-admin startproject <project_name>`
 - `$ python manage.py startapp <app_name>`
 - `cmd + p` and type `>select interpreter`, then find `.env/bin/python`
+- `$ python manage.py makemigrations [<app_name>]`
+- `$ python manage.py migrate`
 
 ### Manage project
 
@@ -39,13 +41,15 @@
 
 ### Run project
 
+#### _Without docker_
+
 - `$ make run`
 
-#### With docker
+#### _With docker_
 
 - `$ make up`
 - `$ make login`
-- `$ make run`
+- `$ make run` (no need to activate pipenv because docker plays role of scoped environment)
 
 ### Deployment
 

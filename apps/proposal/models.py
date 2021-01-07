@@ -58,11 +58,11 @@ class Proposal(models.Model):
         'CityArea', related_name='proposals', on_delete=models.SET_NULL, null=True)
     location_note = models.CharField(max_length=100, blank=True)
     image = models.ImageField(
-        upload_to='uploads/', max_length=100, blank=True)
+        upload_to='uploads/proposal/', max_length=100, blank=True)
     category = models.ForeignKey(
         'Category',  on_delete=models.SET_NULL, null=True)
     author = models.ForeignKey(
-        'auth.User', on_delete=models.SET_NULL, null=True)
+        'userprofile.Profile', on_delete=models.SET_NULL, null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
