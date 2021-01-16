@@ -10,4 +10,8 @@ urlpatterns = [
     path(route=r'',
          view=include(router.urls),
          name='proposals'),
+
+    path(route=r'filters',
+         view=views.FiltersView.as_view(),
+         name='filters'),
 ]

@@ -12,14 +12,14 @@ from .models import Proposal, City, CityArea, Category
 ##
 
 class CityAreaInline(admin.TabularInline):
-    readonly_fields = ['id']
+    readonly_fields = ('id',)
     model = CityArea
     extra = 0
 
 
 @admin.register(City)
 class CityAdmin(admin.ModelAdmin):
-    readonly_fields = ['id']
+    readonly_fields = ('id',)
     fields = ('id', 'name')
     inlines = [CityAreaInline]
 
@@ -30,7 +30,7 @@ class CityAdmin(admin.ModelAdmin):
 
 @admin.register(CityArea)
 class CityAreaAdmin(admin.ModelAdmin):
-    readonly_fields = ['id']
+    readonly_fields = ('id',)
 
 
 ##
@@ -44,7 +44,7 @@ class CityAreaChoiceField(forms.ModelChoiceField):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    pass
+    readonly_fields = ('id',)
 
 
 @admin.register(Proposal)
@@ -55,7 +55,7 @@ class ProposalAdmin(admin.ModelAdmin):
             'fields': ('name', 'description', 'category', 'author')
         }),
         (None, {
-            'fields': ('image', 'image_thumb'),
+            'fields': (('image', 'image_thumb'),),
         }),
         ('Location', {
             'fields': ('city', 'city_area', 'location_note'),

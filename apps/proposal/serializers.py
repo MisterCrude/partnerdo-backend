@@ -1,6 +1,11 @@
 from rest_framework import serializers
 
-from apps.proposal.models import Proposal
+from apps.proposal.models import Proposal, City, CityArea, Category
+
+
+##
+# Proposal
+##
 
 
 class ProposalSerializer(serializers.ModelSerializer):
@@ -16,3 +21,28 @@ class ProposalSerializer(serializers.ModelSerializer):
         # fields = '__all__'
         fields = ('id', 'name', 'description',
                   'city', 'city_area', 'image')
+
+
+##
+# Filters
+##
+
+
+class CityAreaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CityArea
+        fields = ('id', 'name')
+
+
+class CitySerializer(serializers.ModelSerializer):
+    city_areas = CityAreaSerializer(many=True)
+
+    class Meta:
+        model = City
+        fields = ('id', 'name', 'city_areas')
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CityArea
+        fields = ('id', 'name')

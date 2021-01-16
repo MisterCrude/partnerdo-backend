@@ -38,6 +38,7 @@
 - `$ python manage.py createsuperuser`
 - `$ python manage.py shell`
 - `$ export PYTHONDONTWRITEBYTECODE=1`
+- `$ docker system prune -a`
 
 ### Run project
 

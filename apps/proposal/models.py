@@ -28,6 +28,7 @@ class City(models.Model):
 
 
 class Category(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=200)
     parent = models.ForeignKey(
         'self', on_delete=models.SET_NULL,  related_name='children', blank=True, null=True,)

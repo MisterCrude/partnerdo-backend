@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Third-Party Apps
+    'drf_multiple_model',
     'rest_framework',
     'rest_framework.authtoken',
 
