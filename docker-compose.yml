@@ -32,7 +32,7 @@ services:
     image: postgres:latest
     # Exposed post for external connections
     ports:
-      - 5432:5432
+      - 127.0.0.1:5432:5432
     networks:
       - db_network
     env_file:

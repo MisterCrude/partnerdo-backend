@@ -1,4 +1,5 @@
 import uuid
+from django.conf import settings
 from django.db import models
 
 
@@ -63,7 +64,7 @@ class Proposal(models.Model):
     category = models.ForeignKey(
         'Category',  on_delete=models.SET_NULL, null=True)
     author = models.ForeignKey(
-        'userprofile.Profile', on_delete=models.SET_NULL, null=True)
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 

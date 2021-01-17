@@ -1,5 +1,6 @@
 # Manage
 start:
+	python manage.py makemigrations userprofile proposal
 	python manage.py migrate
 	python manage.py createsuperuser
 
@@ -23,20 +24,19 @@ MIGRATIONS_DIR:=migrations
 CACHE_DIR:=__pycache__
 COMPOSE = docker-compose -f docker-compose.yml
 
-rmmigrations:
+rm-migrations:
 	find . -type d -name "${MIGRATIONS_DIR}" -exec rm -rf {} +
 
-clean:
+rm-cache:
 	find . -type d -name "${CACHE_DIR}" -exec rm -rf {} +
 
 reset:
 	find . -type d -name "${MIGRATIONS_DIR}" -exec rm -rf {} +
-	find . -type d -name "${CACHE_DIR}" -exec rm -rf {} +
-	# rm -R "db.sqlite3"
-	# touch "db.sqlite3"
-	python manage.py migrate
-	python manage.py createsuperuser
-	python manage.py runserver
+	docker stop $$(docker ps -a -q)
+	docker rm $$(docker ps -a -q)
+	rm -rf db_data
+	rm -rf media/*
+	docker system prune -a
 
 up: 
 	${COMPOSE} up
