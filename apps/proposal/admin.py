@@ -1,8 +1,6 @@
 import os
 from django import forms
 from django.contrib import admin
-from django.conf import settings
-from django.utils.safestring import mark_safe
 
 from .models import Proposal, City, CityArea, Category
 
@@ -71,11 +69,4 @@ class ProposalAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def image_thumb(self, obj):
-        thumb_path = f'{settings.BASE_DIR}{obj.image.url}'
-
-        if (os.path.exists(thumb_path)):
-            render_thumb = f'<span style="width: 170px; height: 170px; display: block;"><img style="max-width: 100%; max-height: 100%;" src="{obj.image.url}" width="{obj.image.width}" height={obj.image.height} /></span>'
-
-            return mark_safe(render_thumb)
-        else:
-            return "Can't find image"
+        return create_thumb(obj.image)
