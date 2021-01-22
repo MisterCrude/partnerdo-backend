@@ -1,8 +1,7 @@
+from core.utils import get_usersettings_model
 from rest_framework import serializers
-from django.conf import settings
 
 from apps.proposal.models import Proposal, City, CityArea, Category
-from apps.userprofile.models import Profile
 
 
 ##
@@ -41,7 +40,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     avatar = serializers.SerializerMethodField()
 
     class Meta:
-        model = Profile
+        model = get_usersettings_model()
         fields = ('id', 'username', 'first_name',
                   'last_name', 'short_description', 'avatar')
 

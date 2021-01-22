@@ -1,5 +1,6 @@
 # Manage
 start:
+	python manage.py migrate
 	python manage.py makemigrations userprofile proposal
 	python manage.py migrate
 	python manage.py createsuperuser

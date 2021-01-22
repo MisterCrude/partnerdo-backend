@@ -16,3 +16,26 @@ def create_thumb(obj):
         return mark_safe(render_thumb)
     else:
         return "Can't find image"
+
+
+def get_usersettings_model():
+    """
+    Returns the ``UserSettings`` model that is active in this project.
+    """
+    try:
+        from django.apps import apps
+        get_model = apps.get_model
+    except ImportError:
+        from django.db.models.loading import get_model
+
+    try:
+        app_label, model_name = settings.AUTH_USER_MODEL.split('.')
+    except ValueError:
+        raise ImproperlyConfigured('USERSETTINGS_MODEL must be of the '
+                                   'form "app_label.model_name"')
+    usersettings_model = get_model(app_label, model_name)
+
+    if usersettings_model is None:
+        raise ImproperlyConfigured('AUTH_USER_MODEL refers to model "%s" that has '
+                                   'not been installed' % settings.AUTH_USER_MODEL)
+    return usersettings_model
