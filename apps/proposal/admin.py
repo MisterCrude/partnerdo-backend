@@ -51,7 +51,7 @@ class ProposalAdmin(admin.ModelAdmin):
     readonly_fields = ['id', 'image_thumb', 'created', 'updated']
     fieldsets = (
         (None, {
-            'fields': ('name', 'description', 'category', 'author')
+            'fields': ('title', 'description', 'category', 'author')
         }),
         (None, {
             'fields': (('image', 'image_thumb'),),

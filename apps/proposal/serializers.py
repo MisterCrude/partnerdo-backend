@@ -1,26 +1,8 @@
 from rest_framework import serializers
+from django.conf import settings
 
 from apps.proposal.models import Proposal, City, CityArea, Category
-
-
-##
-# Proposal
-##
-
-
-class ProposalSerializer(serializers.ModelSerializer):
-    def to_representation(self, instance):
-        rep = super(ProposalSerializer, self).to_representation(instance)
-        rep['city'] = instance.city.name
-        rep['city_area'] = instance.city_area.name
-
-        return rep
-
-    class Meta:
-        model = Proposal
-        # fields = '__all__'
-        fields = ('id', 'name', 'description',
-                  'city', 'city_area', 'image')
+from apps.userprofile.models import Profile
 
 
 ##
@@ -46,3 +28,46 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = CityArea
         fields = ('id', 'name')
+
+
+##
+# Proposal
+##
+
+class AuthorSerializer(serializers.ModelSerializer):
+    """
+    SerializerMethodField call get_<filed_name> for creatin this field
+    """
+    avatar = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Profile
+        fields = ('id', 'username', 'first_name',
+                  'last_name', 'short_description', 'avatar')
+
+    def get_avatar(self, obj):
+        request = self.context.get('request')
+
+        if obj.avatar:
+            return request.build_absolute_uri(obj.avatar.url)
+
+        return ''
+
+
+class ProposalCitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = City
+        fields = ('id', 'name')
+
+
+class ProposalSerializer(serializers.ModelSerializer):
+    author = AuthorSerializer()
+    category = CategorySerializer()
+    city = ProposalCitySerializer()
+    city_area = CityAreaSerializer()
+
+    class Meta:
+        model = Proposal
+        # fields = '__all__'
+        fields = ('id', 'author', 'title', 'description',
+                  'category', 'city', 'city_area', 'image', 'created')

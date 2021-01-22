@@ -52,24 +52,24 @@ class Category(models.Model):
 
 class Proposal(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    name = models.CharField(max_length=100)
-    description = models.TextField(max_length=200)
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    category = models.ForeignKey(
+        'Category',  on_delete=models.SET_NULL, null=True)
     city = models.ForeignKey(
         'City', related_name='proposals', on_delete=models.SET_NULL, null=True)
     city_area = models.ForeignKey(
         'CityArea', related_name='proposals', on_delete=models.SET_NULL, null=True)
-    location_note = models.CharField(max_length=100, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+    description = models.TextField(max_length=800)
     image = models.ImageField(
         upload_to='uploads/proposal/', max_length=100, blank=True)
-    category = models.ForeignKey(
-        'Category',  on_delete=models.SET_NULL, null=True)
-    author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
-    created = models.DateTimeField(auto_now_add=True)
+    location_note = models.CharField(max_length=100, blank=True)
+    title = models.CharField(max_length=100)
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.name
+        return self.title
 
     class Meta:
         verbose_name_plural = 'Proposals'

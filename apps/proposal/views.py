@@ -7,7 +7,7 @@ from .serializers import ProposalSerializer, CitySerializer, CategorySerializer
 
 
 class ProposalViewSet(viewsets.ModelViewSet):
-    queryset = Proposal.objects.all().order_by('name')
+    queryset = Proposal.objects.all()
     serializer_class = ProposalSerializer
 
 
