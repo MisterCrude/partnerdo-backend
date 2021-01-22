@@ -1,4 +1,5 @@
 import os
+from core.utils import create_thumb
 from django import forms
 from django.contrib import admin
 

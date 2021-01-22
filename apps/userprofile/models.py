@@ -21,7 +21,7 @@ class Profile(AbstractUser):
     avatar = models.ImageField(
         upload_to='uploads/userprofile/', max_length=100, blank=True)
     birth_year = models.IntegerField(validators=[MinValueValidator(
-        current_year() - 100), MaxValueValidator(current_year())], default=current_year() + 100)
+        current_year() - 100), MaxValueValidator(current_year())], null=True)
     sex = models.CharField(
         max_length=1, choices=SEX_CHOICES, default=SEX_CHOICES[0][0])
     description = models.TextField(max_length=200, blank=True)
