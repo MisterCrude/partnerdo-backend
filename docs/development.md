@@ -22,7 +22,7 @@ Pipenv only needed for linked to VSC workspece
 - `$ make up`
 - `$ make login`
 - `$ python manage.py makemigrations [<app_name>, <app_name>]`
-- `$ make start`
+- `$ make setup`
 - `$ make run`
 
 ## Run

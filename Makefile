@@ -1,7 +1,6 @@
 # Manage
-start:
-	python manage.py migrate
-	python manage.py makemigrations userprofile proposal
+setup:
+	python manage.py makemigrations
 	python manage.py migrate
 	python manage.py createsuperuser
 
@@ -26,13 +25,13 @@ CACHE_DIR:=__pycache__
 COMPOSE = docker-compose -f docker-compose.yml
 
 rm-migrations:
-	find . -type d -name "${MIGRATIONS_DIR}" -exec rm -rf {} +
+	find .**/apps/**/migrations/ -type f -name [\!__init__]* -exec rm -rf {} +gaa
 
 rm-cache:
 	find . -type d -name "${CACHE_DIR}" -exec rm -rf {} +
 
 reset:
-	find . -type d -name "${MIGRATIONS_DIR}" -exec rm -rf {} +
+	find .**/apps/**/migrations/ -type f -name [\!__init__]* -exec rm -rf {} +
 	docker stop $$(docker ps -a -q)
 	docker rm $$(docker ps -a -q)
 	rm -rf db_data
