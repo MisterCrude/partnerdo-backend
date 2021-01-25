@@ -3,6 +3,7 @@ setup:
 	python manage.py makemigrations
 	python manage.py migrate
 	python manage.py createsuperuser
+	python manage.py runserver 0.0.0.0:8000
 
 run:
 	python manage.py runserver 0.0.0.0:8000
@@ -20,9 +21,9 @@ migrations:
 	python manage.py makemigrations
 
 # Tools
-MIGRATIONS_DIR:=migrations
-CACHE_DIR:=__pycache__
-COMPOSE = docker-compose -f docker-compose.yml
+MIGRATIONS_DIR :=migrations
+CACHE_DIR :=__pycache__
+COMPOSE := docker-compose -f docker-compose.yml
 
 rm-migrations:
 	find .**/apps/**/migrations/ -type f -name [\!__init__]* -exec rm -rf {} +gaa

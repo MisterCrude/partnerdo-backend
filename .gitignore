@@ -114,7 +114,7 @@ media/
 
 # Only for Development only
 **/migrations/**
-!**/migrations
+# !**/migrations
 !**/migrations/__init__.py
 
 db_data

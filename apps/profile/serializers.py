@@ -1,16 +1,16 @@
 from rest_framework import serializers
 
-from .models import Profile
+from .models import User
 
 
-class ProfileSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     """
     SerializerMethodField call get_<filed_name> for creatin this field
     """
     avatar = serializers.SerializerMethodField()
 
     class Meta:
-        model = Profile
+        model = User
         fields = ['id', 'avatar', 'username', 'email', 'first_name', 'birth_year', 'sex',
                   'last_name', 'description', 'short_description']
 

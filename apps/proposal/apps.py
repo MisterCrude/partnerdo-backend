@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class OfferConfig(AppConfig):
+class ProposalConfig(AppConfig):
     name = 'proposal'
