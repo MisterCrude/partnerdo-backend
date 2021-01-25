@@ -36,10 +36,14 @@ reset:
 	docker rm $$(docker ps -a -q)
 	rm -rf db_data
 	rm -rf media/*
-	docker system prune -a
+	# Answer 'yes' for prompt in 'docker system prune -a' command
+	echo 'y' | docker system prune -a
 
 up: 
 	${COMPOSE} up
+	
+# Run two commands synchronously
+rebuild: reset up
 
 login: 
 	docker exec -it partnerdo-backend_web_1 bash
