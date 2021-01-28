@@ -122,11 +122,13 @@ REST_FRAMEWORK = {
     ]
 }
 
+
 REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'apps.profile.serializers.UserSerializer',
 }
 
 AUTH_USER_MODEL = 'profile.User'
+
 
 SITE_ID = 1
 

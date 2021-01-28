@@ -8,6 +8,7 @@ Pipenv only needed for linked to VSC workspece
 
 ## Setup
 
+
 ### 1. Create pipenv for VSC interpreter (optional step)
 
 - `$ pipenv shell`
@@ -18,10 +19,9 @@ Pipenv only needed for linked to VSC workspece
 ### 2. Build containers and run
 
 - `$ make up`
-- `$ docker-compose down -v` stop containers and remove volume for db
-- `$ make up`
+- ? `$ docker-compose down -v` stop containers and remove volume for db
+- ? `$ make up`
 - `$ make login`
-- `$ python manage.py makemigrations [<app_name>, <app_name>]`
 - `$ make setup`
 - `$ make run`
 

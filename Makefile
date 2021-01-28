@@ -5,6 +5,7 @@ setup:
 	python manage.py createsuperuser
 	python manage.py runserver 0.0.0.0:8000
 
+
 run:
 	python manage.py runserver 0.0.0.0:8000
 
