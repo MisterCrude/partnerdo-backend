@@ -15,7 +15,7 @@ pillow = "*"
 django-cors-headers = "*"
 djangorestframework = "*"
 psycopg2-binary = "*"
-django-seed = "*"
+django-rest-multiple-models = "*"
 
 [requires]
 python_version = "3.8"

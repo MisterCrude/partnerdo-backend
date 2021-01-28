@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Third-Party Apps
+    'drf_multiple_model',
     'rest_framework',
     'rest_framework.authtoken',
 
@@ -35,6 +36,7 @@ INSTALLED_APPS = [
 
     # Local Apps
     'apps.proposal',
+    'apps.profile',
 ]
 
 MIDDLEWARE = [
@@ -119,6 +121,13 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ]
 }
+
+
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'apps.profile.serializers.UserSerializer',
+}
+
+AUTH_USER_MODEL = 'profile.User'
 
 
 SITE_ID = 1

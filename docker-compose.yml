@@ -5,7 +5,7 @@ services:
     restart: always
     build: .
     env_file:
-      - ./env/.env
+      - ./settings/.env
     ports:
       - 127.0.0.1:8000:8000
     volumes:
@@ -30,10 +30,13 @@ services:
   db:
     restart: always
     image: postgres:latest
+    # Exposed post for external connections
+    ports:
+      - 127.0.0.1:5432:5432
     networks:
       - db_network
     env_file:
-      - ./env/.env.database
+      - ./settings/.env.database
     volumes:
       - ./db_data:/var/lib/postgresql/data
 
