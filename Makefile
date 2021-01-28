@@ -5,7 +5,6 @@ setup:
 	python manage.py createsuperuser
 	python manage.py runserver 0.0.0.0:8000
 
-
 run:
 	python manage.py runserver 0.0.0.0:8000
 
@@ -16,10 +15,9 @@ seed:
 	python manage.py seed ${app} --number=100
 
 migrate:
+	python manage.py makemigrations	
 	python manage.py migrate
 
-migrations:
-	python manage.py makemigrations
 
 # Tools
 MIGRATIONS_DIR :=migrations
@@ -31,6 +29,11 @@ rm-migrations:
 
 rm-cache:
 	find . -type d -name "${CACHE_DIR}" -exec rm -rf {} +
+
+restart:
+	docker stop $$(docker ps -a -q)
+	docker start $$(docker ps -a -q)
+	docker exec -it partnerdo-backend_web_1 bash
 
 reset:
 	find .**/apps/**/migrations/ -type f -name [\!__init__]* -exec rm -rf {} +
