@@ -48,16 +48,13 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Proposal)
 class ProposalAdmin(admin.ModelAdmin):
-    readonly_fields = ['id', 'image_thumb', 'created', 'updated']
+    readonly_fields = ['id', 'created', 'updated']
     fieldsets = (
         (None, {
             'fields': ('title', 'description', 'category', 'author')
         }),
-        (None, {
-            'fields': (('image', 'image_thumb'),),
-        }),
         ('Location', {
-            'fields': ('city', 'city_area', 'location_note'),
+            'fields': ('city', 'city_area'),
         }),
         ('Dates', {
             'fields': ('updated', 'created'),

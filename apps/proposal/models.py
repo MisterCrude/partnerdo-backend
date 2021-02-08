@@ -62,9 +62,6 @@ class Proposal(models.Model):
         'CityArea', related_name='proposals', on_delete=models.SET_NULL, null=True)
     created = models.DateTimeField(auto_now_add=True)
     description = models.TextField(max_length=800)
-    image = models.ImageField(
-        upload_to='uploads/proposal/', max_length=100, blank=True)
-    location_note = models.CharField(max_length=100, blank=True)
     title = models.CharField(max_length=100)
     updated = models.DateTimeField(auto_now=True)
 

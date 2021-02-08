@@ -41,8 +41,7 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_usersettings_model()
-        fields = ('id', 'username', 'first_name',
-                  'last_name', 'short_description', 'avatar')
+        fields = ('id', 'username', 'first_name', 'last_name', 'avatar')
 
     def get_avatar(self, obj):
         request = self.context.get('request')
@@ -69,4 +68,18 @@ class ProposalSerializer(serializers.ModelSerializer):
         model = Proposal
         # fields = '__all__'
         fields = ('id', 'author', 'title', 'description',
-                  'category', 'city', 'city_area', 'image', 'created')
+                  'category', 'city', 'city_area', 'created')
+
+
+class ProposalCreateUpdateSerializer(serializers.Serializer):
+    pass
+
+    def create():
+        pass
+
+    def update():
+        pass
+
+    """
+
+    """

@@ -28,7 +28,6 @@ class User(AbstractUser):
     sex = models.CharField(
         max_length=1, choices=SEX_CHOICES, default=SEX_CHOICES[0][0])
     description = models.TextField(max_length=200, blank=True)
-    short_description = models.TextField(max_length=100, blank=True)
 
 
 class Group(BaseGroup):

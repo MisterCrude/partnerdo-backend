@@ -12,7 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'avatar', 'username', 'email', 'first_name', 'birth_year', 'sex',
-                  'last_name', 'description', 'short_description']
+                  'last_name', 'description']
 
     def get_avatar(self, obj):
         request = self.context.get('request')
