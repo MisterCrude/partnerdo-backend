@@ -119,7 +119,9 @@ REST_FRAMEWORK = {
     # https://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-    ]
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 1
 }
 
 

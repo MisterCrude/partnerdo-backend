@@ -71,15 +71,15 @@ class ProposalSerializer(serializers.ModelSerializer):
                   'category', 'city', 'city_area', 'created')
 
 
-class ProposalCreateUpdateSerializer(serializers.Serializer):
-    pass
+# class ProposalCreateUpdateSerializer(serializers.Serializer):
+#     pass
 
-    def create():
-        pass
+#     def create():
+#         pass
 
-    def update():
-        pass
+#     def update():
+#         pass
 
-    """
+#     """
 
-    """
+#     """
