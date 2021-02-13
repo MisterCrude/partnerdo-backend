@@ -1,5 +1,6 @@
 from core.utils import get_usersettings_model
 from rest_framework import serializers
+import datetime
 
 from apps.proposal.models import Proposal, City, CityArea, Category
 
@@ -25,7 +26,7 @@ class CitySerializer(serializers.ModelSerializer):
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = CityArea
+        model = Category
         fields = ('id', 'name')
 
 
@@ -66,20 +67,4 @@ class ProposalSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Proposal
-        # fields = '__all__'
-        fields = ('id', 'author', 'title', 'description',
-                  'category', 'city', 'city_area', 'created')
-
-
-# class ProposalCreateUpdateSerializer(serializers.Serializer):
-#     pass
-
-#     def create():
-#         pass
-
-#     def update():
-#         pass
-
-#     """
-
-#     """
+        fields = '__all__'
