@@ -13,11 +13,11 @@ class ProposalViewSet(viewsets.ModelViewSet):
     queryset = Proposal.objects.all()
     serializer_class = ProposalSerializer
 
-    # def list(self, request):
-    #     queryset = Proposal.objects.all()
-    #     page = self.paginate_queryset(queryset)
-    #     serializer = ProposalSerializer(page, many=True)
-    #     return Response(serializer.data)
+    def retrive(self, request, pk=None):
+        queryset = Proposal.objects.all()
+        proposal = get_object_or_404(queryset, pk=pk)
+        serializer = ProposalSerializer(proposal)
+        return Response(serializer.data)
 
 
 class ProposalDetails(views.APIView):
