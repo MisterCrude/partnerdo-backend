@@ -1,5 +1,6 @@
 from core.utils import get_usersettings_model
 from rest_framework import serializers
+from django.http import QueryDict
 import datetime
 
 from apps.proposal.models import Proposal, City, CityArea, Category
@@ -60,7 +61,7 @@ class ProposalCitySerializer(serializers.ModelSerializer):
 
 
 class ProposalSerializer(serializers.ModelSerializer):
-    author = AuthorSerializer()
+    author = AuthorSerializer(read_only=True)
     category = CategorySerializer()
     city = ProposalCitySerializer()
     city_area = CityAreaSerializer()

@@ -1,21 +1,26 @@
 from rest_framework.routers import DefaultRouter
 from django.urls import path, include
 
-from . import views
+from .views import ProposalAPIView
+from .views import ProposalProposalAPIViewDetails
 
-router = DefaultRouter()
-router.register(r'', views.ProposalViewSet, basename='proposal')
+# router = DefaultRouter()
+# router.register(r'', views.ProposalViewSet, basename='proposal')
 
 urlpatterns = [
     path(route=r'',
-         view=include(router.urls),
+         view=ProposalAPIView.as_view(),
          name='proposals'),
 
-    #     path(route=r'<uuid:pk>',
-    #          view=views.ProposalDetails.as_view(),
-    #          name='proposal'),
+    path(route=r'<uuid:pk>',
+         view=ProposalProposalAPIViewDetails.as_view(),
+         name='proposal'),
 
-    #     path(route=r'filters',
-    #          view=views.FiltersView.as_view(),
-    #          name='filters'),
+    # path(route=r'',
+    #      view=include(router.urls),
+    #      name='proposals'),
+
+    # path(route=r'filters',
+    #      view=views.FiltersView.as_view(),
+    #      name='filters'),
 ]

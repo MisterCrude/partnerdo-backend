@@ -121,7 +121,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 1
+    'PAGE_SIZE': 2,
+    'EXCEPTION_HANDLER': 'core.exceptions.exception_with_status_code_handler',
 }
 
 
