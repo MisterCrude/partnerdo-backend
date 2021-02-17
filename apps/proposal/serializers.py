@@ -61,7 +61,7 @@ class ProposalCitySerializer(serializers.ModelSerializer):
 
 
 class ProposalSerializer(serializers.ModelSerializer):
-    author = AuthorSerializer(read_only=True)
+    author = AuthorSerializer()
     category = CategorySerializer()
     city = ProposalCitySerializer()
     city_area = CityAreaSerializer()
@@ -69,3 +69,12 @@ class ProposalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Proposal
         fields = '__all__'
+
+
+class ProposalDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Proposal
+        fields = '__all__'
+        extra_kwargs = {'city': {'required': True},
+                        'city_area': {'required': True},
+                        'author': {'required': True}}

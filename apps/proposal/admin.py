@@ -51,7 +51,7 @@ class ProposalAdmin(admin.ModelAdmin):
     readonly_fields = ['id', 'created', 'updated']
     fieldsets = (
         (None, {
-            'fields': ('title', 'description', 'category', 'author')
+            'fields': ('id', 'title', 'description', 'category', 'author')
         }),
         ('Location', {
             'fields': ('city', 'city_area'),
