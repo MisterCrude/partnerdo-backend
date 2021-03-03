@@ -65,6 +65,3 @@ class ProposalAdmin(admin.ModelAdmin):
         if db_field.name == 'city_area':
             return CityAreaChoiceField(queryset=CityArea.objects.all())
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    def image_thumb(self, obj):
-        return create_thumb(obj.image)

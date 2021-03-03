@@ -120,6 +120,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
+    # PageNumberPagination for /?limit=10&offset=0
+    # LimitOffsetPagination for /?page=3
+    # https://www.django-rest-framework.org/api-guide/pagination/#pagenumberpagination
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10,
     'EXCEPTION_HANDLER': 'core.exceptions.exception_with_status_code_handler',

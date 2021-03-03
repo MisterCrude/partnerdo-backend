@@ -31,7 +31,7 @@ class UserAdmin(BaseUserAdmin):
 
     fieldsets = replace_fields_for_useradmin(BaseUserAdmin.fieldsets, (_('Personal info'), {'fields': (
         'id', 'first_name', 'last_name', 'email', ('avatar', 'avatar_thumb'),
-        'birth_year', 'sex', 'description')}))
+        'birth_year', 'gender', 'description')}))
 
     readonly_fields = ['id', 'avatar_thumb', 'last_login', 'date_joined']
 

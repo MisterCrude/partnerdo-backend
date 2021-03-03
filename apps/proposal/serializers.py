@@ -43,7 +43,8 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_usersettings_model()
-        fields = ('id', 'username', 'first_name', 'last_name', 'avatar')
+        fields = ('id', 'username', 'first_name',
+                  'last_name', 'avatar', 'description')
 
     def get_avatar(self, obj):
         request = self.context.get('request')

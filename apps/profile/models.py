@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser, Group as BaseGroup
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+from django.utils.translation import gettext as _
 
 
 SEX_CHOICES = [
@@ -25,9 +26,9 @@ class User(AbstractUser):
         upload_to='uploads/userprofile/', max_length=100, blank=True)
     birth_year = models.IntegerField(validators=[MinValueValidator(
         current_year() - 100), MaxValueValidator(current_year())], blank=True, null=True)
-    sex = models.CharField(
+    gender = models.CharField(
         max_length=1, choices=SEX_CHOICES, default=SEX_CHOICES[0][0])
-    description = models.TextField(max_length=200, blank=True)
+    description = models.TextField(max_length=200)
 
 
 class Group(BaseGroup):

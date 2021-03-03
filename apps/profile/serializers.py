@@ -11,7 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'avatar', 'username', 'email', 'first_name', 'birth_year', 'sex',
+        fields = ['id', 'avatar', 'username', 'email', 'first_name', 'birth_year', 'gender',
                   'last_name', 'description']
 
     def get_avatar(self, obj):
