@@ -5,7 +5,7 @@ from django.db import models
 
 class CityArea(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=30)
     city = models.ForeignKey(
         'City', related_name='city_areas', on_delete=models.SET_NULL, null=True)
 
@@ -19,7 +19,7 @@ class CityArea(models.Model):
 
 class City(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=30)
 
     def __str__(self):
         return self.name
@@ -30,18 +30,22 @@ class City(models.Model):
 
 class Category(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    name = models.CharField(max_length=200)
-    parent = models.ForeignKey(
-        'self', on_delete=models.SET_NULL,  related_name='children', blank=True, null=True,)
+    name = models.CharField(max_length=30)
+    # TODO uncommit it when will working on subcategories
+    # parent = models.ForeignKey(
+    #     'self', on_delete=models.CASCADE, related_name='categories', null=True, blank=True)
 
     def __str__(self):
-        full_path = [self.name]
-        k = self.parent
+        return self.name
+        # full_path = [self.name]
 
-        while k is not None:
-            full_path.append(k.name)
-            k = k.parent
-        return ' > '.join(full_path[::-1])
+        # if self.parent:
+        #     k = self.parent
+        #     while k is not None:
+        #         full_path.append(k.name)
+        #         k = k.parent
+
+        # return ' > '.join(full_path[::-1])
 
     def save(self, *args, **kwargs):
         super(Category, self).save(*args, **kwargs)

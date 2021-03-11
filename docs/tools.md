@@ -21,6 +21,7 @@ High-level Python Web framework
 - [Django & Docker deploy](https://github.com/LondonAppDeveloper/demo-django-docker-nginx-prod)
 
 <br/>
+<br/>
 
 ## [Django REST](https://www.django-rest-framework.org/)
 
@@ -32,6 +33,7 @@ Powerful and flexible framework for building Web APIs
 
 - [REST API with Python & Django ](https://github.com/LondonAppDeveloper/recipe-app-api/tree/master/app/user)
 
+<br/>
 <br/>
 
 ## [Django REST auth](https://dj-rest-auth.readthedocs.io/en/latest/index.html) + [Django simple JWT](https://github.com/SimpleJWT/django-rest-framework-simplejwt/) + [Django allauth](https://django-allauth.readthedocs.io/en/latest/)
@@ -45,6 +47,15 @@ Powerful and flexible framework for building Web APIs
 ### Useful links
 
 - [How to use (video)](https://www.youtube.com/watch?v=PtVu04V027c&ab_channel=ProgrammingRace)
+
+<br/>
+<br/>
+
+## [Django filter](https://django-filter.readthedocs.io/en/stable/index.html)
+
+```
+Filters for filtering queryset based on query params
+```
 
 # Can be used
 

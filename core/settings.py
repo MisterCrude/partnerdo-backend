@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Third-Party Apps
+    'django_filters',
     'drf_multiple_model',
     'rest_framework',
     'rest_framework.authtoken',
@@ -120,6 +121,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
     # PageNumberPagination for /?limit=10&offset=0
     # LimitOffsetPagination for /?page=3
     # https://www.django-rest-framework.org/api-guide/pagination/#pagenumberpagination
@@ -128,10 +132,10 @@ REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'core.exceptions.exception_with_status_code_handler',
 }
 
-
 REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'apps.profile.serializers.UserSerializer',
 }
+
 
 AUTH_USER_MODEL = 'profile.User'
 

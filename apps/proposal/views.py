@@ -14,6 +14,7 @@ from rest_framework.views import APIView
 
 
 from ..profile.models import User
+from .filters import ProposalFilter
 from .models import Proposal, City, Category, CityArea
 from .serializers import ProposalSerializer, ProposalDetailsSerializer, CitySerializer, CategorySerializer
 
@@ -26,6 +27,7 @@ class ProposalListAPIView(ListAPIView):
     ListAPIView extended by GenaricAPIView, GenericAPIView has pagination, queryset, serializer_class etc.
     Use get(), post(), etc instead create(), retrive(), etc
     """
+    filterset_class = ProposalFilter
     queryset = Proposal.objects.all()
     serializer_class = ProposalSerializer
 
@@ -94,7 +96,7 @@ class FiltersView(ObjectMultipleModelAPIView):
             'serializer_class': CategorySerializer,
         },
         {
-            'label': "cities",
+            'label': 'cities',
             'queryset': City.objects.all(),
             'serializer_class': CitySerializer,
         },
