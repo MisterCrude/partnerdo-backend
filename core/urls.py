@@ -12,6 +12,9 @@ urlpatterns = [
     path(route=f'{API_PREFIX}/proposals/',
          view=include('apps.proposal.urls')),
 
+    path(route=f'{API_PREFIX}/user/',
+         view=include('apps.profile.urls')),
+
     path(route=f'{API_PREFIX}/auth/',
          view=include('dj_rest_auth.urls')),
 

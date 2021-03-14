@@ -21,7 +21,7 @@ class User(AbstractUser):
         upload_to='uploads/userprofile/', max_length=100, blank=True)
     birth_year = models.IntegerField(validators=[MinValueValidator(
         current_year() - 100), MaxValueValidator(current_year())], blank=True, null=True)
-    # TODO set gender field as required without GENDER_CHOICES
+    # TODO set gender field as required without GENDER_CHOICES in defalut
     gender = models.CharField(
         max_length=1, choices=GENDER_CHOICES, default=GENDER_CHOICES[0][0])
     description = models.TextField(max_length=200)

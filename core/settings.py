@@ -133,7 +133,7 @@ REST_FRAMEWORK = {
 }
 
 REST_AUTH_SERIALIZERS = {
-    'USER_DETAILS_SERIALIZER': 'apps.profile.serializers.UserSerializer',
+    'USER_DETAILS_SERIALIZER': 'apps.profile.serializers.ProfileSerializer',
 }
 
 
@@ -142,6 +142,7 @@ AUTH_USER_MODEL = 'profile.User'
 
 SITE_ID = 1
 
+DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Europe/Warsaw'
@@ -151,7 +152,7 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
-STATIC_ROOT_PATH = BASE_DIR / 'static'
+STATIC_ROOT_PATH = f'{BASE_DIR}/static'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = f'{BASE_DIR}/media'

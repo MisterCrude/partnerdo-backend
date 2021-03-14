@@ -9,8 +9,6 @@ from apps.proposal.models import Proposal, City, CityArea, Category
 ##
 # Filters
 ##
-
-
 class CityAreaSerializer(serializers.ModelSerializer):
     class Meta:
         model = CityArea
@@ -34,7 +32,6 @@ class CategorySerializer(serializers.ModelSerializer):
 ##
 # Proposal
 ##
-
 class AuthorSerializer(serializers.ModelSerializer):
     """
     SerializerMethodField call get_<filed_name> for creatin this field
@@ -46,6 +43,7 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'first_name',
                   'last_name', 'avatar', 'description')
 
+    # TODO use ulis here
     def get_avatar(self, obj):
         request = self.context.get('request')
 
@@ -69,7 +67,7 @@ class ProposalSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Proposal
-        fields = '__all__'
+        exclude = ('updated',)
 
 
 class ProposalDetailsSerializer(serializers.ModelSerializer):

@@ -24,9 +24,9 @@ class ProposalFilter(filters.FilterSet):
         current_year = datetime.datetime.now().year
 
         if len(age_range) == 1 and re.match('[0-9]', age_range[0]):
-            min_age = current_year - int(age_range[0])
+            birth_year = current_year - int(age_range[0])
 
-            return queryset.filter(author__birth_year__gte=min_age)
+            return queryset.filter(author__birth_year__lt=birth_year)
 
         if len(age_range) == 2 and re.match('[0-9]', age_range[1]) and re.match('[0-9]', age_range[0]):
             max_birth_year = current_year - int(age_range[0])

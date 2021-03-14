@@ -57,7 +57,7 @@ class Category(models.Model):
 class Proposal(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+        settings.AUTH_USER_MODEL, related_name='proposals', on_delete=models.SET_NULL, null=True)
     category = models.ForeignKey(
         'Category',  on_delete=models.SET_NULL, null=True)
     city = models.ForeignKey(

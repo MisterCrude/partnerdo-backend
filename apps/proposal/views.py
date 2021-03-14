@@ -4,8 +4,8 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
 from drf_multiple_model.views import ObjectMultipleModelAPIView
-from rest_framework.exceptions import ErrorDetail, NotFound
-from rest_framework.generics import RetrieveAPIView, DestroyAPIView, ListAPIView, UpdateAPIView, CreateAPIView
+from rest_framework.exceptions import ErrorDetail, ParseError
+from rest_framework.generics import DestroyAPIView, ListAPIView, UpdateAPIView, CreateAPIView
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -45,8 +45,8 @@ class ProposalCreateUpdateAPIView(APIView):
 
             return Response(response_serializer.data, status=HTTP_201_CREATED)
         except:
-            raise NotFound(_(f"{pk} is invalid proposal id."),
-                           code='invalid_proposal_id')
+            raise ParseError(_(f"{pk} is invalid proposal id."),
+                            code='invalid_proposal_id')
 
 
 class ProposalDetailsAPIView(APIView):
@@ -55,8 +55,8 @@ class ProposalDetailsAPIView(APIView):
             proposal = Proposal.objects.get(pk=pk)
             serializer = ProposalSerializer(proposal)
         except:
-            raise NotFound(_(f"{pk} is invalid proposal id."),
-                           code='invalid_proposal_id')
+            raise ParseError(_(f"{pk} is invalid proposal id."),
+                            code='invalid_proposal_id')
 
         return Response(serializer.data)
 
@@ -64,8 +64,8 @@ class ProposalDetailsAPIView(APIView):
         try:
             Proposal.objects.get(pk=pk).delete()
         except:
-            raise NotFound(_(f"{pk} is not found."),
-                           code='proposal_not_found')
+            raise ParseError(_(f"{pk} is not found."),
+                            code='proposal_not_found')
 
         return Response(status=HTTP_204_NO_CONTENT)
 
@@ -73,8 +73,8 @@ class ProposalDetailsAPIView(APIView):
         try:
             proposal = Proposal.objects.get(pk=pk)
         except:
-            raise NotFound(_(f'{pk} is invalid proposal id.'),
-                           code='invalid_proposal_id')
+            raise ParseError(_(f'{pk} is invalid proposal id.'),
+                            code='invalid_proposal_id')
 
         request_serilaizer = ProposalDetailsSerializer(
             instance=proposal, data=request.data, partial=True)

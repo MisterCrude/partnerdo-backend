@@ -9,7 +9,7 @@ def create_thumb(image_url):
 
         return mark_safe(render_thumb)
     else:
-        return "Can't find image"
+        return "-"
 
 
 def get_usersettings_model():
