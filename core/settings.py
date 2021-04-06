@@ -142,7 +142,6 @@ AUTH_USER_MODEL = 'profile.User'
 
 SITE_ID = 1
 
-DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Europe/Warsaw'

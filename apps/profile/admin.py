@@ -5,7 +5,7 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from core.utils import create_thumb
 
-from .models import User, Group
+from .models import User, Group, ProfileAvatar
 
 
 def replace_fields_for_useradmin(admin_fields, new_fields):
@@ -42,3 +42,8 @@ class UserAdmin(BaseUserAdmin):
 @admin.register(Group)
 class GroupAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(ProfileAvatar)
+class ProfileAvatarAdmin(admin.ModelAdmin):
+    readonly_fields = ('id',)

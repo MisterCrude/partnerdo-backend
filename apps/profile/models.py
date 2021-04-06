@@ -12,18 +12,28 @@ def current_year():
     return datetime.datetime.now().year
 
 
+class ProfileAvatar(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    image = models.ImageField(
+        upload_to='uploads/userprofile/', max_length=100)
+
+    def __str__(self):
+        if hasattr(self, 'user'):
+            return f'{self.user.username}'
+        else:
+            return _('- not assigned -')
+
+
 class User(AbstractUser):
     """
     Set name for custom user model ad 'User' otherwise it involve "auth_group" db error
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    avatar = models.ImageField(
-        upload_to='uploads/userprofile/', max_length=100, blank=True)
+    avatar = models.OneToOneField(
+        ProfileAvatar, on_delete=models.CASCADE, null=True)
     birth_year = models.IntegerField(validators=[MinValueValidator(
         current_year() - 100), MaxValueValidator(current_year())], blank=True, null=True)
-    # TODO set gender field as required without GENDER_CHOICES in defalut
-    gender = models.CharField(
-        max_length=1, choices=GENDER_CHOICES, default=GENDER_CHOICES[0][0])
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     description = models.TextField(max_length=200)
 
 

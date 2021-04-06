@@ -46,7 +46,7 @@ class ProposalCreateUpdateAPIView(APIView):
             return Response(response_serializer.data, status=HTTP_201_CREATED)
         except:
             raise ParseError(_(f"{pk} is invalid proposal id."),
-                            code='invalid_proposal_id')
+                             code='invalid_proposal_id')
 
 
 class ProposalDetailsAPIView(APIView):
@@ -56,7 +56,7 @@ class ProposalDetailsAPIView(APIView):
             serializer = ProposalSerializer(proposal)
         except:
             raise ParseError(_(f"{pk} is invalid proposal id."),
-                            code='invalid_proposal_id')
+                             code='invalid_proposal_id')
 
         return Response(serializer.data)
 
@@ -65,7 +65,7 @@ class ProposalDetailsAPIView(APIView):
             Proposal.objects.get(pk=pk).delete()
         except:
             raise ParseError(_(f"{pk} is not found."),
-                            code='proposal_not_found')
+                             code='proposal_not_found')
 
         return Response(status=HTTP_204_NO_CONTENT)
 
@@ -74,7 +74,7 @@ class ProposalDetailsAPIView(APIView):
             proposal = Proposal.objects.get(pk=pk)
         except:
             raise ParseError(_(f'{pk} is invalid proposal id.'),
-                            code='invalid_proposal_id')
+                             code='invalid_proposal_id')
 
         request_serilaizer = ProposalDetailsSerializer(
             instance=proposal, data=request.data, partial=True)
