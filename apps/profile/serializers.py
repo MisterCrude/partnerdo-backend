@@ -57,7 +57,7 @@ class RetrieveProfileAvatarSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
 
         if obj.avatar:
-            return request.build_absolute_uri(obj.avatar.url)
+            return request.build_absolute_uri(obj.avatar.image.url)
 
         return ''
 
@@ -76,7 +76,7 @@ class UserProposalsSerializer(ProposalSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     proposals = UserProposalsSerializer(many=True)
-    avatar = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
@@ -88,6 +88,6 @@ class UserSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
 
         if obj.avatar:
-            return request.build_absolute_uri(obj.avatar.url)
+            return request.build_absolute_uri(obj.avatar.image.url)
 
         return ''

@@ -36,7 +36,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     """
     SerializerMethodField call get_<filed_name> for creatin this field
     """
-    avatar = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = get_usersettings_model()
@@ -48,7 +48,7 @@ class AuthorSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
 
         if obj.avatar:
-            return request.build_absolute_uri(obj.avatar.url)
+            return request.build_absolute_uri(obj.avatar.image.url)
 
         return ''
 

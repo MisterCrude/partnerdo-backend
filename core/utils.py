@@ -2,9 +2,9 @@ from django.conf import settings
 from django.utils.safestring import mark_safe
 
 
-def create_thumb(image_url):
-    if (image_url):
-        thumb_path = f'{settings.MEDIA_URL}{image_url}'
+def create_thumb(avatar):
+    if (avatar.image):
+        thumb_path = avatar.image.url
         render_thumb = f'<span style="width: 170px; height: 170px; display: block;"><img style="max-width: 100%; max-height: 100%;" src="{thumb_path}" width="100px" height="auto" /></span>'
 
         return mark_safe(render_thumb)

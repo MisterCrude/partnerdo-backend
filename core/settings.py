@@ -28,8 +28,9 @@ INSTALLED_APPS = [
     'dj_rest_auth',
     'dj_rest_auth.registration',
 
-    'allauth.account',
     'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 
     # TODO remove in pord version
     'django_seed',

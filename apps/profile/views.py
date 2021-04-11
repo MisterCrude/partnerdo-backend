@@ -3,11 +3,11 @@ from django.utils.translation import gettext as _
 from rest_framework.exceptions import ParseError
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.status import HTTP_204_NO_CONTENT, HTTP_201_CREATED
+from rest_framework.status import HTTP_204_NO_CONTENT, HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import UserSerializer, CreateProfileAvatarSerializer, RetrieveProfileAvatarSerializer, UpdateProfileSerializer
+from .serializers import UserSerializer, CreateProfileAvatarSerializer, RetrieveProfileAvatarSerializer
 from .models import User, ProfileAvatar
 
 
@@ -19,22 +19,39 @@ class UserRetrieveAPIView(RetrieveAPIView):
 class ProfileAvatarCreateAPIView(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
-    def post(self, request):
-        """
-        Check if profile_id field exists in request body and check if exists user with this id
-        """
-        try:
-            profile_id = request.data['profile_id']
-            profile = User.objects.filter(pk=profile_id)
+    def delete(self, request):
+        profile = User.objects.filter(pk=request.user.id)
 
-        except:
-            raise ParseError(_("Can't find profile with provided profile_id"),
-                             code='profile_does_not_exist')
+        profile_avatar = [item for item in profile.values('avatar')][0]
+        profile_avatar_id = profile_avatar.get('avatar')
+
+        if not profile_avatar_id:
+            return Response(status=HTTP_200_OK)
+        else:
+            try:
+                ProfileAvatar.objects.get(pk=profile_avatar_id).delete()
+            except:
+                raise ParseError(_("Can't delete avatar"),
+                                 code='can_not_delete_avatar')
+
+        return Response(status=HTTP_200_OK)
+
+    def post(self, request):
+        profile = User.objects.filter(pk=request.user.id)
 
         """
         Check if image field exists in request body and save as model instance
         """
         if request.data.get('image'):
+            # Delete existing avatar if present
+            profile_avatar = [
+                item for item in profile.values('avatar')][0]
+            profile_avatar_id = profile_avatar.get('avatar')
+
+            if profile_avatar_id:
+                ProfileAvatar.objects.get(
+                    pk=profile_avatar_id).delete()
+
             request_serilaizer = CreateProfileAvatarSerializer(
                 data=request.data)
             request_serilaizer.is_valid(raise_exception=True)
@@ -48,7 +65,7 @@ class ProfileAvatarCreateAPIView(APIView):
                              code='image_file_not_attached')
 
         """
-        Check if profile_id field exists in request body and check if exists user with this id
+        Update avatar in existing model instance
         """
         try:
             profile.update(avatar=profile_avatar)

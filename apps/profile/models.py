@@ -23,18 +23,30 @@ class ProfileAvatar(models.Model):
         else:
             return _('- not assigned -')
 
+    def delete(self, *args, **kwargs):
+        user = User.objects.filter(avatar__id=self.id)
+        user.update(avatar='')
+        self.image.delete()
+        super(ProfileAvatar, self).delete(*args, **kwargs)
+
 
 class User(AbstractUser):
     """
     Set name for custom user model ad 'User' otherwise it involve "auth_group" db error
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    # use models.DO_NOTHING for ability unpin avatar for chosen profile
     avatar = models.OneToOneField(
-        ProfileAvatar, on_delete=models.CASCADE, null=True)
+        ProfileAvatar, on_delete=models.DO_NOTHING, null=True, blank=True)
     birth_year = models.IntegerField(validators=[MinValueValidator(
-        current_year() - 100), MaxValueValidator(current_year())], blank=True, null=True)
+        current_year() - 100), MaxValueValidator(current_year())])
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     description = models.TextField(max_length=200)
+
+    def delete(self, *args, **kwargs):
+        if self.avatar:
+            ProfileAvatar.objects.get(pk=self.avatar.id).delete()
+        super(User, self).delete(*args, **kwargs)
 
 
 class Group(BaseGroup):

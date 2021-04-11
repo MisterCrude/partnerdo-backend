@@ -23,7 +23,7 @@ class ProposalListAPIView(ListAPIView):
     permission_classes = [AllowAny]
     """
     Only for GET pagginated list
-   
+
     ListAPIView extended by GenaricAPIView, GenericAPIView has pagination, queryset, serializer_class etc.
     Use get(), post(), etc instead create(), retrive(), etc
     """
@@ -53,7 +53,8 @@ class ProposalDetailsAPIView(APIView):
     def get(self, request, pk):
         try:
             proposal = Proposal.objects.get(pk=pk)
-            serializer = ProposalSerializer(proposal)
+            serializer = ProposalSerializer(
+                proposal, context={'request': request})
         except:
             raise ParseError(_(f"{pk} is invalid proposal id."),
                              code='invalid_proposal_id')

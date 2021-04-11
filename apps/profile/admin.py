@@ -38,6 +38,10 @@ class UserAdmin(BaseUserAdmin):
     def avatar_thumb(self, obj):
         return create_thumb(obj.avatar)
 
+    def delete_queryset(self, request, queryset):
+        for obj in queryset:
+            obj.delete()
+
 
 @admin.register(Group)
 class GroupAdmin(admin.ModelAdmin):
@@ -47,3 +51,7 @@ class GroupAdmin(admin.ModelAdmin):
 @admin.register(ProfileAvatar)
 class ProfileAvatarAdmin(admin.ModelAdmin):
     readonly_fields = ('id',)
+
+    def delete_queryset(self, request, queryset):
+        for obj in queryset:
+            obj.delete()
