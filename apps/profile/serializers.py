@@ -45,26 +45,9 @@ class CreateProfileAvatarSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class RetrieveProfileAvatarSerializer(serializers.ModelSerializer):
-    avatar = serializers.SerializerMethodField(read_only=True)
-
-    class Meta:
-        model = ProfileAvatar
-        fields = '__all__'
-
-    # TODO use util here
-    def get_avatar(self, obj):
-        request = self.context.get('request')
-
-        if obj.avatar:
-            return request.build_absolute_uri(obj.avatar.image.url)
-
-        return ''
-
-
 ##
 # User
-# proposal data for exact user
+# proposal data for some user
 ##
 class UserProposalsSerializer(ProposalSerializer):
     author = None

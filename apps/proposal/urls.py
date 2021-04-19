@@ -1,7 +1,7 @@
 from rest_framework.routers import DefaultRouter
 from django.urls import path, include
 
-from .views import FiltersView, ProposalListAPIView, ProposalDetailsAPIView, ProposalCreateUpdateAPIView
+from .views import FiltersAPIView, ProposalListAPIView, ProposalDetailsAPIView, ProposalCreateUpdateAPIView
 
 # router = DefaultRouter()
 # router.register(r'', views.ProposalViewSet, basename='proposal')
@@ -20,6 +20,6 @@ urlpatterns = [
          name='proposal'),
 
     path(route=r'filters',
-         view=FiltersView.as_view(),
+         view=FiltersAPIView.as_view(),
          name='filters'),
 ]

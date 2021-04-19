@@ -9,11 +9,11 @@ from rest_framework.generics import DestroyAPIView, ListAPIView, UpdateAPIView, 
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.status import HTTP_204_NO_CONTENT, HTTP_201_CREATED
+from rest_framework.status import HTTP_204_NO_CONTENT, HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.views import APIView
 
 
-from ..profile.models import User
+from apps.profile.models import User
 from .filters import ProposalFilter
 from .models import Proposal, City, Category, CityArea
 from .serializers import ProposalSerializer, ProposalDetailsSerializer, CitySerializer, CategorySerializer
@@ -59,7 +59,7 @@ class ProposalDetailsAPIView(APIView):
             raise ParseError(_(f"{pk} is invalid proposal id."),
                              code='invalid_proposal_id')
 
-        return Response(serializer.data)
+        return Response(serializer.data, status=HTTP_200_OK)
 
     def delete(self, request, pk):
         try:
@@ -87,7 +87,7 @@ class ProposalDetailsAPIView(APIView):
         return Response(responce_serializer.data, status=HTTP_201_CREATED)
 
 
-class FiltersView(ObjectMultipleModelAPIView):
+class FiltersAPIView(ObjectMultipleModelAPIView):
     permission_classes = [AllowAny]
     pagination_class = None
     querylist = [

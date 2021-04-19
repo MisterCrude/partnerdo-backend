@@ -44,4 +44,4 @@ class ProposalFilter(filters.FilterSet):
 
     class Meta:
         model = Proposal
-        fields = ['gender', 'categories', 'city', 'age', 'search']
+        fields = ['gender', 'categories', 'city', 'age', 'search', 'author']

@@ -7,11 +7,11 @@ from rest_framework.status import HTTP_204_NO_CONTENT, HTTP_201_CREATED, HTTP_20
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import UserSerializer, CreateProfileAvatarSerializer, RetrieveProfileAvatarSerializer
-from .models import User, ProfileAvatar
+from .serializers import UserSerializer, CreateProfileAvatarSerializer
+from .models import User, ProfileAvatar, User
 
 
-class UserRetrieveAPIView(RetrieveAPIView):
+class ProfileRetrieveAPIView(RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
