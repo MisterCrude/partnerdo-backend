@@ -7,7 +7,7 @@ from rest_framework.status import HTTP_204_NO_CONTENT, HTTP_201_CREATED, HTTP_20
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import UserSerializer, CreateProfileAvatarSerializer
+from .serializers import UserSerializer, AvatarSerializer
 from .models import User, ProfileAvatar, User
 
 
@@ -52,7 +52,7 @@ class ProfileAvatarCreateAPIView(APIView):
                 ProfileAvatar.objects.get(
                     pk=profile_avatar_id).delete()
 
-            request_serilaizer = CreateProfileAvatarSerializer(
+            request_serilaizer = AvatarSerializer(
                 data=request.data)
             request_serilaizer.is_valid(raise_exception=True)
             request_serilaizer.save()

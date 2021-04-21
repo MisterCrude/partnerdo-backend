@@ -37,8 +37,9 @@ class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     # use models.DO_NOTHING for ability unpin avatar for chosen profile
     avatar = models.OneToOneField(
-        ProfileAvatar, on_delete=models.DO_NOTHING, null=True, blank=True)
-    birth_year = models.IntegerField(validators=[MinValueValidator(
+        ProfileAvatar, on_delete=models.SET_NULL, null=True, blank=True)
+    # TODO null=True for creating superuser by shell, because I can't provide this field in shell, need to refactor
+    birth_year = models.IntegerField(null=True, validators=[MinValueValidator(
         current_year() - 100), MaxValueValidator(current_year())])
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     description = models.TextField(max_length=200)

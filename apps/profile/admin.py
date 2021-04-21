@@ -25,8 +25,8 @@ admin.site.unregister(BaseGroup)
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    """    
-    Inherit from UserAdmin for hashing password during creatint new user 
+    """
+    Inherit from UserAdmin for hashing password during creatint new user
     """
 
     fieldsets = replace_fields_for_useradmin(BaseUserAdmin.fieldsets, (_('Personal info'), {'fields': (
@@ -36,7 +36,7 @@ class UserAdmin(BaseUserAdmin):
     readonly_fields = ['id', 'avatar_thumb', 'last_login', 'date_joined']
 
     def avatar_thumb(self, obj):
-        return create_thumb(obj.avatar)
+        return create_thumb(obj.avatar.image if obj.avatar else None)
 
     def delete_queryset(self, request, queryset):
         for obj in queryset:
@@ -50,8 +50,16 @@ class GroupAdmin(admin.ModelAdmin):
 
 @admin.register(ProfileAvatar)
 class ProfileAvatarAdmin(admin.ModelAdmin):
-    readonly_fields = ('id',)
+    readonly_fields = ('id', 'image_thumb')
+    fieldsets = (
+        (None, {
+            'fields': ('id', ('image', 'image_thumb'))
+        }),
+    )
 
     def delete_queryset(self, request, queryset):
         for obj in queryset:
             obj.delete()
+
+    def image_thumb(self, obj):
+        return create_thumb(obj.image)

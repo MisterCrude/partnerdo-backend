@@ -20,8 +20,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Third-Party Apps
+    'corsheaders',
     'django_filters',
-    'drf_multiple_model',
     'rest_framework',
     'rest_framework.authtoken',
 
@@ -32,11 +32,10 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
 
-    # TODO remove in pord version
+    # TODO remove for PROD
     'django_seed',
-    'corsheaders',
 
-    # Local Apps
+    # Custom Apps
     'apps.proposal',
     'apps.profile',
 ]

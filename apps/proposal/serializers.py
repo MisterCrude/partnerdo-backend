@@ -24,14 +24,22 @@ class CitySerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Category
-        fields = ('id', 'name')
+        fields = '__all__'
+
+
+class FiltersSerializer(serializers.Serializer):
+    cities = CitySerializer(many=True)
+    categories = CategorySerializer(many=True)
 
 
 ##
 # Proposal
 ##
+
+
 class AuthorSerializer(serializers.ModelSerializer):
     """
     SerializerMethodField call get_<filed_name> for creatin this field

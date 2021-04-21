@@ -31,6 +31,9 @@ class City(models.Model):
 class Category(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=30)
+    color = models.CharField(max_length=7, default='#dd6b21')
+    image = models.ImageField(
+        upload_to='uploads/categories/', max_length=100, blank=True)
     # TODO uncommit it when will working on subcategories
     # parent = models.ForeignKey(
     #     'self', on_delete=models.CASCADE, related_name='categories', null=True, blank=True)
@@ -50,6 +53,10 @@ class Category(models.Model):
     def save(self, *args, **kwargs):
         super(Category, self).save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        self.image.delete()
+        super(Category, self).delete(*args, **kwargs)
+
     class Meta:
         verbose_name_plural = 'Categories'
 
@@ -57,13 +64,12 @@ class Category(models.Model):
 class Proposal(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='proposals', on_delete=models.SET_NULL, null=True)
-    category = models.ForeignKey(
-        'Category',  on_delete=models.SET_NULL, null=True)
+        settings.AUTH_USER_MODEL, related_name='proposals', on_delete=models.PROTECT)
+    category = models.ForeignKey('Category',  on_delete=models.PROTECT)
     city = models.ForeignKey(
-        'City', related_name='proposals', on_delete=models.SET_NULL, null=True)
+        'City', related_name='proposals', on_delete=models.PROTECT)
     city_area = models.ForeignKey(
-        'CityArea', related_name='proposals', on_delete=models.SET_NULL, null=True)
+        'CityArea', related_name='proposals', on_delete=models.PROTECT)
     created = models.DateTimeField(auto_now_add=True)
     description = models.TextField(max_length=800)
     title = models.CharField(max_length=100)
@@ -73,4 +79,5 @@ class Proposal(models.Model):
         return self.title
 
     class Meta:
+        ordering = ['-created']
         verbose_name_plural = 'Proposals'

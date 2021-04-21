@@ -25,8 +25,9 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     # TODO use util here
     def get_avatar(self, obj):
+        request = self.context.get('request')
+
         if obj.avatar is not None:
-            request = self.context.get('request')
             return request.build_absolute_uri(obj.avatar.image.url)
 
         return ''
@@ -39,7 +40,7 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
                   'last_name', 'description')
 
 
-class CreateProfileAvatarSerializer(serializers.ModelSerializer):
+class AvatarSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProfileAvatar
         fields = '__all__'

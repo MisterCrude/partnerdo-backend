@@ -6,12 +6,13 @@ verify_ssl = true
 [dev-packages]
 flake8 = "*"
 autopep8 = "*"
+pyyaml = "*"
+uritemplate = "*"
 
 [packages]
 dj-rest-auth = {extras = ["with_social"], version = "*"}
 django = "*"
 django-cors-headers = "*"
-django-rest-multiple-models = "*"
 django-seed = "*"
 djangorestframework = "*"
 pillow = "*"

@@ -1,9 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.forms.models import model_to_dict
-from django.http import Http404
+from django.http import Http404, QueryDict
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
-from drf_multiple_model.views import ObjectMultipleModelAPIView
 from rest_framework.exceptions import ErrorDetail, ParseError
 from rest_framework.generics import DestroyAPIView, ListAPIView, UpdateAPIView, CreateAPIView
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
@@ -11,12 +10,12 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.status import HTTP_204_NO_CONTENT, HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.views import APIView
-
+from urllib import parse
 
 from apps.profile.models import User
 from .filters import ProposalFilter
 from .models import Proposal, City, Category, CityArea
-from .serializers import ProposalSerializer, ProposalDetailsSerializer, CitySerializer, CategorySerializer
+from .serializers import ProposalSerializer, ProposalDetailsSerializer, CitySerializer, CategorySerializer, FiltersSerializer
 
 
 class ProposalListAPIView(ListAPIView):
@@ -32,21 +31,25 @@ class ProposalListAPIView(ListAPIView):
     serializer_class = ProposalSerializer
 
 
-class ProposalCreateUpdateAPIView(APIView):
+class ProposalCreateAPIView(APIView):
     def post(self, request):
-        request_serializer = ProposalDetailsSerializer(data=request.data)
+        new_proposal_query_dict = request.data.copy()
+        new_proposal_query_dict.__setitem__('author', request.user.id)
+
+        request_serializer = ProposalDetailsSerializer(
+            data=new_proposal_query_dict)
         request_serializer.is_valid(raise_exception=True)
         request_serializer.save()
-
         try:
             proposal_id = request_serializer.data.get('id')
             proposal = Proposal.objects.get(pk=proposal_id)
-            response_serializer = ProposalSerializer(proposal)
+            response_serializer = ProposalSerializer(
+                proposal, context={'request': request})
 
             return Response(response_serializer.data, status=HTTP_201_CREATED)
         except:
-            raise ParseError(_(f"{pk} is invalid proposal id."),
-                             code='invalid_proposal_id')
+            raise ParseError(_("Can't create new proposal."),
+                             code='can_not_create_new_proposal')
 
 
 class ProposalDetailsAPIView(APIView):
@@ -77,28 +80,29 @@ class ProposalDetailsAPIView(APIView):
             raise ParseError(_(f'{pk} is invalid proposal id.'),
                              code='invalid_proposal_id')
 
-        request_serilaizer = ProposalDetailsSerializer(
-            instance=proposal, data=request.data, partial=True)
-        request_serilaizer.is_valid(raise_exception=True)
-        request_serilaizer.save()
+        serilaizer = ProposalDetailsSerializer(
+            instance=proposal, data=request.data, partial=True, context={'request': request})
+        serilaizer.is_valid(raise_exception=True)
+        serilaizer.save()
 
-        responce_serializer = ProposalSerializer(proposal)
+        responce_serializer = ProposalSerializer(proposal, context={'request': request})
 
         return Response(responce_serializer.data, status=HTTP_201_CREATED)
 
 
-class FiltersAPIView(ObjectMultipleModelAPIView):
+class FiltersAPIView(APIView):
     permission_classes = [AllowAny]
-    pagination_class = None
-    querylist = [
-        {
-            'label': 'categories',
-            'queryset': Category.objects.all(),
-            'serializer_class': CategorySerializer,
-        },
-        {
-            'label': 'cities',
-            'queryset': City.objects.all(),
-            'serializer_class': CitySerializer,
-        },
-    ]
+
+    def get(self, request):
+        try:
+            categories = Category.objects.all()
+            cities = City.objects.all()
+
+            serializer = FiltersSerializer(
+                instance={'categories': categories, 'cities': cities})
+
+        except:
+            raise ParseError(_("Can't get filters"),
+                             code='can_not_get_filters')
+
+        return Response(serializer.data, status=HTTP_200_OK)

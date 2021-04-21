@@ -13,7 +13,7 @@ WORKDIR /code/
 # --dev — Install both develop and default packages from Pipfile
 # --system — Use the system pip command rather than the one from your virtualenv
 COPY Pipfile* /code/
-RUN pipenv install --system --dev
+RUN pipenv install --system --dev 
 
 ADD . /code/
 

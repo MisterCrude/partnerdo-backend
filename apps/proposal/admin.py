@@ -43,7 +43,19 @@ class CityAreaChoiceField(forms.ModelChoiceField):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    readonly_fields = ('id',)
+    readonly_fields = ['id', 'image_thumb']
+    fieldsets = (
+        (None, {
+            'fields': ('id', 'name', ('image', 'image_thumb'), 'color')
+        }),
+    )
+
+    def image_thumb(self, obj):
+        return create_thumb(obj.image)
+
+    def delete_queryset(self, request, queryset):
+        for obj in queryset:
+            obj.delete()
 
 
 @admin.register(Proposal)
