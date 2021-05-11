@@ -15,26 +15,11 @@ High-level Python Web framework
 - [Django ORM](https://books.agiliq.com/projects/django-orm-cookbook/en/latest/)
 - [Django API](https://books.agiliq.com/projects/django-api-polls-tutorial/en/latest/)
 
-### Projects examples
-
-- [Django locallibrary (Mozilla tutorial)](django-locallibrary-tutorial)
-- [Django & Docker deploy](https://github.com/LondonAppDeveloper/demo-django-docker-nginx-prod)
-
-<br/>
-<br/>
-
 ## [Django REST](https://www.django-rest-framework.org/)
 
 ```
 Powerful and flexible framework for building Web APIs
 ```
-
-### Projects examples
-
-- [REST API with Python & Django ](https://github.com/LondonAppDeveloper/recipe-app-api/tree/master/app/user)
-
-<br/>
-<br/>
 
 ## [Django REST auth](https://dj-rest-auth.readthedocs.io/en/latest/index.html) + [Django simple JWT](https://github.com/SimpleJWT/django-rest-framework-simplejwt/) + [Django allauth](https://django-allauth.readthedocs.io/en/latest/)
 
@@ -56,6 +41,16 @@ Powerful and flexible framework for building Web APIs
 ```
 Filters for filtering queryset based on query params
 ```
+
+## [Django extensions / Graph models](https://django-extensions.readthedocs.io/en/latest/graph_models.html)
+
+```
+Generate models UML diagram
+```
+
+- [How to use](https://medium.com/@yathomasi1/1-using-django-extensions-to-visualize-the-database-diagram-in-django-application-c5fa7e710e16)
+
+- [Pygraphviz instalation](https://pygraphviz.github.io/documentation/stable/install.html)
 
 # Can be used
 

@@ -40,6 +40,12 @@
 - `$ export PYTHONDONTWRITEBYTECODE=1`
 - `$ docker system prune -a`
 
+### Django extentions
+
+- `$ python manage.py runserver_plus`
+- `$ python manage.py show_urls`
+- `$ python manage.py graph_models -a -g -o models_diagram.png` (with Pygraphviz)
+
 ### DB Seed
 
 - `$ python manage.py seed <app_name> [--number=<nuber_of_seeds>]`

@@ -118,3 +118,6 @@ media/
 !**/migrations/__init__.py
 
 db_data
+
+# Other
+models_diagram.png

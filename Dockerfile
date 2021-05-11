@@ -3,6 +3,10 @@ FROM python:3.8
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
+# Install graphviz which is needed for django-extentions
+# RUN apt update or RUN apt-get update or
+RUN apt-get install graphviz graphviz-dev
+
 RUN pip install --upgrade pip
 RUN pip install pipenv
 

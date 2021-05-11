@@ -8,6 +8,8 @@ flake8 = "*"
 autopep8 = "*"
 pyyaml = "*"
 uritemplate = "*"
+django-extensions = "*"
+pygraphviz = "*"
 
 [packages]
 dj-rest-auth = {extras = ["with_social"], version = "*"}
@@ -18,6 +20,7 @@ djangorestframework = "*"
 pillow = "*"
 psycopg2-binary = "*"
 django-filter = "*"
+django-extensions = "*"
 
 [requires]
 python_version = "3.8"
