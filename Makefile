@@ -53,5 +53,8 @@ rebuild: reset up
 login: 
 	docker exec -it partnerdo-backend_web_1 bash
 
+login_redis:
+	docker exec -it partnerdo-backend_cache_1 bash
+
 diagram:
 	python manage.py graph_models -a -g -o models_diagram.png

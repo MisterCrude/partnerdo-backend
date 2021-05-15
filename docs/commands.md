@@ -26,6 +26,7 @@
 ## Django setup
 
 - `$ django-admin startproject <project_name>`
+- `$ django-admin startproject <project_name> .` in current dir
 - `$ python manage.py startapp <app_name>`
 - `cmd + p` and type `>select interpreter`, then find `.env/bin/python`
 - `$ python manage.py makemigrations [<app_name>]`

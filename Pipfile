@@ -1,15 +1,7 @@
 [[source]]
-name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
-
-[dev-packages]
-flake8 = "*"
-autopep8 = "*"
-pyyaml = "*"
-uritemplate = "*"
-django-extensions = "*"
-pygraphviz = "*"
+name = "pypi"
 
 [packages]
 dj-rest-auth = {extras = ["with_social"], version = "*"}
@@ -18,9 +10,19 @@ django-cors-headers = "*"
 django-seed = "*"
 djangorestframework = "*"
 pillow = "*"
-psycopg2-binary = "*"
 django-filter = "*"
 django-extensions = "*"
+channels = "*"
+
+[dev-packages]
+flake8 = "*"
+pyyaml = "*"
+uritemplate = "*"
+django-extensions = "*"
+autopep8 = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.9"
+
+[pipenv]
+allow_prereleases = true

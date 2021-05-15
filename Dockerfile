@@ -1,11 +1,7 @@
-FROM python:3.8
+FROM python:3.9
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-
-# Install graphviz which is needed for django-extentions
-# RUN apt update or RUN apt-get update or
-RUN apt-get install graphviz graphviz-dev
 
 RUN pip install --upgrade pip
 RUN pip install pipenv
@@ -15,9 +11,11 @@ WORKDIR /code/
 
 # TODO: remove --dev for production 
 # --dev — Install both develop and default packages from Pipfile
-# --system — Use the system pip command rather than the one from your virtualenv
+# --system — Install all without environment
 COPY Pipfile* /code/
-RUN pipenv install --system --dev 
+RUN pipenv install --dev --system
+# psycopg2-binary installed by pip because pipenv didn't support this package 
+RUN pip install psycopg2-binary
 
 ADD . /code/
 
