@@ -1,14 +1,13 @@
-import os
 from core.utils import create_thumb
 from django import forms
 from django.contrib import admin
 
-from .models import Proposal, City, CityArea, Category
-
+from .models import Category, City, CityArea, Proposal
 
 ##
 # City
 ##
+
 
 class CityAreaInline(admin.TabularInline):
     readonly_fields = ('id',)
@@ -53,7 +52,7 @@ class CategoryAdmin(admin.ModelAdmin):
     def image_thumb(self, obj):
         return create_thumb(obj.image)
 
-    def delete_queryset(self, request, queryset):
+    def delete_queryset(self, queryset):
         for obj in queryset:
             obj.delete()
 

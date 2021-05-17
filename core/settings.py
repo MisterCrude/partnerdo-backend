@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'rest_framework.authtoken',
+    'channels',
 
     'dj_rest_auth',
     'dj_rest_auth.registration',
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     # Custom Apps
     'apps.proposal',
     'apps.profile',
+    'apps.chat',
 ]
 
 MIDDLEWARE = [
@@ -71,6 +73,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
+
+ASGI_APPLICATION = 'core.asgi.application'
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(os.environ.get("CACHE_HOST", "127.0.0.1"), os.environ.get("CACHE_PORT", "6379"))],
+        },
+    },
+}
 
 
 DATABASES = {

@@ -1,8 +1,7 @@
-from rest_framework.routers import DefaultRouter
-from django.urls import path, include
+from django.urls import path
 
-from .views import FiltersAPIView, ProposalListAPIView, ProposalDetailsAPIView, ProposalCreateAPIView
-
+from .views import (FiltersAPIView, ProposalCreateAPIView,
+                    ProposalDetailsAPIView, ProposalListAPIView)
 
 urlpatterns = [
     path(route=r'',  # GET list

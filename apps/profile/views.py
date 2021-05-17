@@ -2,13 +2,14 @@ from django.shortcuts import render
 from django.utils.translation import gettext as _
 from rest_framework.exceptions import ParseError
 from rest_framework.generics import RetrieveAPIView
-from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.status import HTTP_204_NO_CONTENT, HTTP_201_CREATED, HTTP_200_OK
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
+from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
+                                   HTTP_204_NO_CONTENT)
 from rest_framework.views import APIView
 
-from .serializers import UserSerializer, AvatarSerializer
-from .models import User, ProfileAvatar, User
+from .models import ProfileAvatar, User
+from .serializers import AvatarSerializer, UserSerializer
 
 
 class ProfileRetrieveAPIView(RetrieveAPIView):
@@ -30,7 +31,7 @@ class ProfileAvatarCreateAPIView(APIView):
         else:
             try:
                 ProfileAvatar.objects.get(pk=profile_avatar_id).delete()
-            except:
+            except Exception:
                 raise ParseError(_("Can't delete avatar"),
                                  code='can_not_delete_avatar')
 
@@ -70,7 +71,7 @@ class ProfileAvatarCreateAPIView(APIView):
         try:
             profile.update(avatar=profile_avatar)
 
-        except:
+        except Exception:
             raise ParseError(_("Can't update avatar field in profile"),
                              code='can_not_update_or_create_image')
 

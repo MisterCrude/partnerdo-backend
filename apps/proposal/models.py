@@ -1,6 +1,14 @@
 import uuid
+
 from django.conf import settings
 from django.db import models
+from django.utils.translation import gettext as _
+
+PROPOSAL_RESPONSE_STATUS = [
+    (0, _('Idle')),
+    (1, _('Approved')),
+    (2, _('Rejected')),
+]
 
 
 class CityArea(models.Model):
@@ -65,7 +73,7 @@ class Proposal(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name='proposals', on_delete=models.PROTECT)
-    category = models.ForeignKey('Category',  on_delete=models.PROTECT)
+    category = models.ForeignKey('Category', on_delete=models.PROTECT)
     city = models.ForeignKey(
         'City', related_name='proposals', on_delete=models.PROTECT)
     city_area = models.ForeignKey(

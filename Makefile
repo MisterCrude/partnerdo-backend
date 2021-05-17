@@ -51,10 +51,13 @@ up:
 rebuild: reset up
 
 login: 
-	docker exec -it partnerdo-backend_web_1 bash
+	docker exec -it django_app bash
 
 login_redis:
-	docker exec -it partnerdo-backend_cache_1 bash
+	docker exec -it redis bash
+
+login_postgres:
+	docker exec -it postgres_db bash
 
 diagram:
 	python manage.py graph_models -a -g -o models_diagram.png

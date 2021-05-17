@@ -1,9 +1,7 @@
 from core.utils import get_usersettings_model
 from rest_framework import serializers
-from django.http import QueryDict
-import datetime
 
-from apps.proposal.models import Proposal, City, CityArea, Category
+from apps.proposal.models import Category, City, CityArea, Proposal
 
 
 ##
@@ -38,8 +36,6 @@ class FiltersSerializer(serializers.Serializer):
 ##
 # Proposal
 ##
-
-
 class AuthorSerializer(serializers.ModelSerializer):
     """
     SerializerMethodField call get_<filed_name> for creatin this field

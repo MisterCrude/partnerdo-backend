@@ -1,9 +1,10 @@
 import datetime
 import uuid
+
 from core.consts import GENDER_CHOICES
-from django.conf import settings
-from django.contrib.auth.models import AbstractUser, Group as BaseGroup
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import Group as BaseGroup
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import gettext as _
 

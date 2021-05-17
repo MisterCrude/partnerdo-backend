@@ -1,21 +1,20 @@
-from django.core.exceptions import ValidationError
-from django.forms.models import model_to_dict
-from django.http import Http404, QueryDict
-from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
-from rest_framework.exceptions import ErrorDetail, ParseError
-from rest_framework.generics import DestroyAPIView, ListAPIView, UpdateAPIView, CreateAPIView
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
+from rest_framework.exceptions import ParseError
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.status import HTTP_204_NO_CONTENT, HTTP_201_CREATED, HTTP_200_OK
+from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
+                                   HTTP_204_NO_CONTENT)
 from rest_framework.views import APIView
-from urllib import parse
 
-from apps.profile.models import User
 from .filters import ProposalFilter
-from .models import Proposal, City, Category, CityArea
-from .serializers import ProposalSerializer, ProposalDetailsSerializer, CitySerializer, CategorySerializer, FiltersSerializer
+from .models import Category, City, Proposal
+from .serializers import (FiltersSerializer, ProposalDetailsSerializer,
+                          ProposalSerializer)
+
+##
+# Proposal
+##
 
 
 class ProposalListAPIView(ListAPIView):
@@ -47,7 +46,7 @@ class ProposalCreateAPIView(APIView):
                 proposal, context={'request': request})
 
             return Response(response_serializer.data, status=HTTP_201_CREATED)
-        except:
+        except Exception:
             raise ParseError(_("Can't create new proposal."),
                              code='can_not_create_new_proposal')
 
@@ -58,16 +57,16 @@ class ProposalDetailsAPIView(APIView):
             proposal = Proposal.objects.get(pk=pk)
             serializer = ProposalSerializer(
                 proposal, context={'request': request})
-        except:
+        except Exception:
             raise ParseError(_(f"{pk} is invalid proposal id."),
                              code='invalid_proposal_id')
 
         return Response(serializer.data, status=HTTP_200_OK)
 
-    def delete(self, request, pk):
+    def delete(self, pk):
         try:
             Proposal.objects.get(pk=pk).delete()
-        except:
+        except Exception:
             raise ParseError(_(f"{pk} is not found."),
                              code='proposal_not_found')
 
@@ -76,7 +75,7 @@ class ProposalDetailsAPIView(APIView):
     def patch(self, request, pk):
         try:
             proposal = Proposal.objects.get(pk=pk)
-        except:
+        except Exception:
             raise ParseError(_(f'{pk} is invalid proposal id.'),
                              code='invalid_proposal_id')
 
@@ -85,9 +84,15 @@ class ProposalDetailsAPIView(APIView):
         serilaizer.is_valid(raise_exception=True)
         serilaizer.save()
 
-        responce_serializer = ProposalSerializer(proposal, context={'request': request})
+        responce_serializer = ProposalSerializer(
+            proposal, context={'request': request})
 
         return Response(responce_serializer.data, status=HTTP_201_CREATED)
+
+
+##
+# Filters
+##
 
 
 class FiltersAPIView(APIView):
@@ -101,7 +106,7 @@ class FiltersAPIView(APIView):
             serializer = FiltersSerializer(
                 instance={'categories': categories, 'cities': cities})
 
-        except:
+        except Exception:
             raise ParseError(_("Can't get filters"),
                              code='can_not_get_filters')
 
