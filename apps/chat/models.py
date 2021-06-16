@@ -32,7 +32,7 @@ class ChatRoom(models.Model):
         default=0, decimal_places=0, max_digits=10, validators=[MinValueValidator(0)])
 
     def __str__(self):
-        return self.id.__str__()
+        return str(self.id)
 
     class Meta:
         ordering = ('-created',)

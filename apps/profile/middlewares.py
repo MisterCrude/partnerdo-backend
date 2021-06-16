@@ -14,6 +14,11 @@ class TokenAuthMiddleware:
         self.inner = inner
 
     async def __call__(self, scope, receive, send):
+        # If token not provided as parameter
+        if len(scope['query_string']) < 1:
+            scope['user'] = AnonymousUser()
+            return await self.inner(scope, receive, send)
+
         query_params_list = scope['query_string'].decode().split('&')
         query_params_dict = dict(param.split('=')
                                  for param in query_params_list)
