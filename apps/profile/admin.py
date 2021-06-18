@@ -1,11 +1,10 @@
-from django.apps import apps
-from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, Group as BaseGroup
-from django.utils.html import format_html
-from django.utils.translation import gettext_lazy as _
 from core.utils import create_thumb
+from django.contrib import admin
+from django.contrib.auth.admin import Group as BaseGroup
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.utils.translation import gettext_lazy as _
 
-from .models import User, Group, ProfileAvatar
+from .models import Group, ProfileAvatar, User
 
 
 def replace_fields_for_useradmin(admin_fields, new_fields):

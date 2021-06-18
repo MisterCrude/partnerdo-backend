@@ -1,6 +1,7 @@
 import uuid
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.signals import pre_save
@@ -12,6 +13,27 @@ CHAT_ROOM_OPEN_STATUS = [
     (1, _('Approved')),
     (2, _('Rejected')),
 ]
+
+
+class Message(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    content = models.TextField(max_length=400)
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name='message_author', on_delete=models.PROTECT)
+    created = models.DateTimeField(auto_now_add=True)
+    chatroom = models.ForeignKey(
+        'ChatRoom', related_name='messages', on_delete=models.PROTECT)
+
+    def clean(self):
+        chat_room_initiator = self.chatroom.initiator
+        chat_room_proposal_author = self.chatroom.proposal_author
+
+        if self.author.id not in [chat_room_initiator.id, chat_room_proposal_author.id]:
+            raise ValidationError(
+                _('Author should be chat room initiator or proposal author'))
+
+    def __str__(self):
+        return str(self.id)
 
 
 class ChatRoom(models.Model):

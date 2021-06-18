@@ -1,6 +1,12 @@
 from django.contrib import admin
 
-from .models import ChatRoom
+from .models import ChatRoom, Message
+
+
+class MessgesInline(admin.TabularInline):
+    readonly_fields = (id,)
+    model = Message
+    extra = 0
 
 
 @admin.register(ChatRoom)
@@ -15,3 +21,11 @@ class ChatRoomAdmin(admin.ModelAdmin):
             'fields': ('last_message', 'created',),
         }),
     )
+
+    inlines = [MessgesInline]
+
+
+@admin.register(Message)
+class MessageAdmin(admin.ModelAdmin):
+    readonly_fields = ['id', 'created']
+    fields = ('id', 'author', 'chatroom', 'created')
