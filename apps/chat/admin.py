@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ChatRoom, Message
+from .models import Chatroom, Message
 
 
 class MessgesInline(admin.TabularInline):
@@ -9,8 +9,8 @@ class MessgesInline(admin.TabularInline):
     extra = 0
 
 
-@admin.register(ChatRoom)
-class ChatRoomAdmin(admin.ModelAdmin):
+@admin.register(Chatroom)
+class ChatroomAdmin(admin.ModelAdmin):
     readonly_fields = ['id', 'last_message',
                        'chatroom', 'created', 'proposal_author']
     fieldsets = (
@@ -28,4 +28,4 @@ class ChatRoomAdmin(admin.ModelAdmin):
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
     readonly_fields = ['id', 'created']
-    fields = ('id', 'author', 'chatroom', 'created')
+    fields = ('id', 'author', 'chatroom', 'content', 'created')

@@ -63,7 +63,7 @@ class ProposalDetailsAPIView(APIView):
 
         return Response(serializer.data, status=HTTP_200_OK)
 
-    def delete(self, pk):
+    def delete(self, request, pk):
         try:
             Proposal.objects.get(pk=pk).delete()
         except Exception:
