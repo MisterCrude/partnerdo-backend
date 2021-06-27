@@ -47,12 +47,9 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'first_name',
                   'last_name', 'avatar', 'description')
 
-    # TODO use ulis here
     def get_avatar(self, obj):
-        request = self.context.get('request')
-
         if obj.avatar:
-            return request.build_absolute_uri(obj.avatar.image.url)
+            return obj.avatar.image.url
 
         return ''
 

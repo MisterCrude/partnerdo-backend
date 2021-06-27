@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.utils.safestring import mark_safe
+from rest_framework import serializers
 
 
 def serializer_field_required_validator(value, field_name):
@@ -7,10 +8,12 @@ def serializer_field_required_validator(value, field_name):
         raise serializers.ValidationError(f'Field {field_name} is required')
 
 
-def create_thumb(image):
+def create_admin_thumb(image):
     if (image):
         thumb_path = image.url
-        render_thumb = f'<span style="width: 170px; height: 170px; display: block;"><img style="max-width: 100%; max-height: 100%;" src="{thumb_path}" width="100px" height="auto" /></span>'
+        render_thumb = f"""<span style="width: 170px; height: 170px; display: block;">
+                              <img style="max-width: 100%; max-height: 100%;" src="{thumb_path}" width="100px" height="auto" />
+                           </span>"""
 
         return mark_safe(render_thumb)
     else:

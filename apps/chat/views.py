@@ -31,8 +31,7 @@ class ChatroomDetailsAPIView(APIView):
             user = self.request.user
             proposal_response = Chatroom.objects.get(
                 Q(pk=pk), Q(initiator=user) | Q(proposal_author=user))
-            serializer = ChatroomSerializer(
-                proposal_response, context={'request': request})
+            serializer = ChatroomSerializer(proposal_response)
         except Exception:
             raise ParseError(_(f"{pk} is invalid chat room id."),
                              code='invalid_chatroom_id')

@@ -42,8 +42,7 @@ class ProposalCreateAPIView(APIView):
         try:
             proposal_id = request_serializer.data.get('id')
             proposal = Proposal.objects.get(pk=proposal_id)
-            response_serializer = ProposalSerializer(
-                proposal, context={'request': request})
+            response_serializer = ProposalSerializer(proposal)
 
             return Response(response_serializer.data, status=HTTP_201_CREATED)
         except Exception:
@@ -55,8 +54,7 @@ class ProposalDetailsAPIView(APIView):
     def get(self, request, pk):
         try:
             proposal = Proposal.objects.get(pk=pk)
-            serializer = ProposalSerializer(
-                proposal, context={'request': request})
+            serializer = ProposalSerializer(proposal)
         except Exception:
             raise ParseError(_(f"{pk} is invalid proposal id."),
                              code='invalid_proposal_id')
@@ -80,12 +78,11 @@ class ProposalDetailsAPIView(APIView):
                              code='invalid_proposal_id')
 
         serilaizer = ProposalDetailsSerializer(
-            instance=proposal, data=request.data, partial=True, context={'request': request})
+            instance=proposal, data=request.data, partial=True)
         serilaizer.is_valid(raise_exception=True)
         serilaizer.save()
 
-        responce_serializer = ProposalSerializer(
-            proposal, context={'request': request})
+        responce_serializer = ProposalSerializer(proposal)
 
         return Response(responce_serializer.data, status=HTTP_201_CREATED)
 

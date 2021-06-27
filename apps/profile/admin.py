@@ -1,4 +1,4 @@
-from core.utils import create_thumb
+from core.utils import create_admin_thumb
 from django.contrib import admin
 from django.contrib.auth.admin import Group as BaseGroup
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
@@ -35,7 +35,7 @@ class UserAdmin(BaseUserAdmin):
     readonly_fields = ['id', 'avatar_thumb', 'last_login', 'date_joined']
 
     def avatar_thumb(self, obj):
-        return create_thumb(obj.avatar.image if obj.avatar else None)
+        return create_admin_thumb(obj.avatar.image if obj.avatar else None)
 
     def delete_queryset(self, request, queryset):
         for obj in queryset:
@@ -61,4 +61,4 @@ class ProfileAvatarAdmin(admin.ModelAdmin):
             obj.delete()
 
     def image_thumb(self, obj):
-        return create_thumb(obj.image)
+        return create_admin_thumb(obj.image)

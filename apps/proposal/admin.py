@@ -1,4 +1,4 @@
-from core.utils import create_thumb
+from core.utils import create_admin_thumb
 from django import forms
 from django.contrib import admin
 
@@ -50,7 +50,7 @@ class CategoryAdmin(admin.ModelAdmin):
     )
 
     def image_thumb(self, obj):
-        return create_thumb(obj.image)
+        return create_admin_thumb(obj.image)
 
     def delete_queryset(self, queryset):
         for obj in queryset:

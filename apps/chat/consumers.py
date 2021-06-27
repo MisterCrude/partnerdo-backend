@@ -5,7 +5,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django.db.models import Q
 
 from .models import Chatroom, Message
-from .serializers import MessageSerializer
+from .serializers import ChatroomSerializer, MessageSerializer
 
 
 @database_sync_to_async
@@ -24,6 +24,18 @@ def get_chatroom_messages(chatroom_id, amount=10):
             '-created').filter(chatroom_id=chatroom_id)
         message_slice = messages[:amount]
         serializer = MessageSerializer(reversed(message_slice), many=True)
+
+        return serializer.data
+    except Exception:
+        return None
+
+
+@database_sync_to_async
+def get_chatrooms(user):
+    try:
+        chatrooms = Chatroom.objects.filter(
+            Q(initiator=user) | Q(proposal_author=user))
+        serializer = ChatroomSerializer(chatrooms, many=True)
 
         return serializer.data
     except Exception:
@@ -98,3 +110,37 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'type': 'send_chatroom_messages',
             }
         )
+
+
+class ChatConsumerTest(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.user = self.scope['user']
+        self.room_group_name = 'chatrooms'
+
+        if self.user.is_anonymous:
+            return await self.close()
+
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+
+        chatrooms = await get_chatrooms(self.user)
+
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'message': chatrooms,
+                'type': 'send_chatrooms_list',
+            })
+
+        await self.accept()
+
+    async def send_chatrooms_list(self, event):
+        message = event['message']
+        message_type = event['type']
+
+        await self.send(json.dumps({
+            'message': message,
+            'type': message_type,
+        }))

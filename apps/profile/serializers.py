@@ -1,8 +1,9 @@
 from rest_framework import serializers
 
-from .models import User, ProfileAvatar
-from apps.proposal.serializers import ProposalSerializer
 from apps.proposal.models import Proposal
+from apps.proposal.serializers import ProposalSerializer
+
+from .models import ProfileAvatar, User
 
 ##
 # Profile
@@ -23,12 +24,9 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ('id', 'avatar', 'username', 'email', 'first_name', 'birth_year', 'gender',
                   'last_name', 'description')
 
-    # TODO use util here
     def get_avatar(self, obj):
-        request = self.context.get('request')
-
         if obj.avatar is not None:
-            return request.build_absolute_uri(obj.avatar.image.url)
+            return obj.avatar.image.url
 
         return ''
 
@@ -67,11 +65,8 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'avatar', 'username', 'email',
                   'first_name', 'last_name', 'description', 'proposals')
 
-    # TODO use util here
     def get_avatar(self, obj):
-        request = self.context.get('request')
-
         if obj.avatar:
-            return request.build_absolute_uri(obj.avatar.image.url)
+            return obj.avatar.image.url
 
         return ''
