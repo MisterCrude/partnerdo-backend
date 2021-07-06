@@ -1,14 +1,9 @@
 from django.urls import path
 
 from .views import (ChatroomChangeStatusAPIView, ChatroomCreateAPIView,
-                    ChatroomDetailsAPIView, ChatroomListAPIView)
+                    ChatroomDetailsAPIView)
 
 urlpatterns = [
-
-    path(route=r'',  # GET list
-         view=ChatroomListAPIView.as_view(),
-         name='proposal_chatrooms'),
-
     path(route=r'<uuid:pk>',
          view=ChatroomDetailsAPIView.as_view(),
          name='proposal_chatroom_details'),

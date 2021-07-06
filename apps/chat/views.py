@@ -16,15 +16,6 @@ from .serializers import ChatroomCreateSerializer, ChatroomSerializer
 ##
 
 
-class ChatroomListAPIView(ListAPIView):
-    # Only for GET pagginated list
-    serializer_class = ChatroomSerializer
-
-    def get_queryset(self):
-        user = self.request.user
-        return Chatroom.objects.filter(Q(initiator=user) | Q(proposal_author=user))
-
-
 class ChatroomDetailsAPIView(APIView):
     def get(self, request, pk):
         try:
