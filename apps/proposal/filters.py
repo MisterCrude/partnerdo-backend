@@ -1,9 +1,11 @@
 import datetime
 import re
-from apps.proposal.models import Proposal
-from core.consts import GENDER_CHOICES
-from django_filters import rest_framework as filters
+
+from core.constants import GENDER_CHOICES
 from django.db.models import Q
+from django_filters import rest_framework as filters
+
+from apps.proposal.models import Proposal
 
 
 class ProposalFilter(filters.FilterSet):

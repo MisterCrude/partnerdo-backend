@@ -1,7 +1,7 @@
 import datetime
 import uuid
 
-from core.consts import GENDER_CHOICES
+from core.constants import GENDER_CHOICES
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import Group as BaseGroup
 from django.core.validators import MaxValueValidator, MinValueValidator

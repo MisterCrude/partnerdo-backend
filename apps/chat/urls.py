@@ -11,7 +11,7 @@ urlpatterns = [
 
     path(route=r'<uuid:pk>',
          view=ChatroomDetailsAPIView.as_view(),
-         name='proposal_chatroom_detailse'),
+         name='proposal_chatroom_details'),
 
     path(route=r'create',
          view=ChatroomCreateAPIView.as_view(),
