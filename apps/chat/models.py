@@ -1,10 +1,12 @@
 import uuid
 
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models.signals import pre_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext as _
 
@@ -65,6 +67,37 @@ class Chatroom(models.Model):
 ##
 
 
-@receiver(pre_save, sender=Chatroom)  # sender will be class
-def proposal_response_save_handler(sender, instance, raw, using, update_fields, **kwargs):
+@receiver(pre_save, sender=Chatroom)
+def save_handler(instance, **kwargs):
     instance.proposal_author = instance.proposal.author
+
+
+@receiver(post_save, sender=Chatroom)
+def change_staus_handler(instance, **kwargs):
+    # Is new satatus approve or reject
+    if instance.status != 0:
+
+        channel_layer = get_channel_layer()
+        room_group_name = f'user_{instance.initiator.id}'
+
+        async_to_sync(channel_layer.group_send)(
+            room_group_name,
+            {
+                'type': 'has_new_message',
+            }
+        )
+
+
+@receiver(post_save, sender=Chatroom)
+def create_chatroom_handler(instance, created, **kwargs):
+    if created:
+
+        channel_layer = get_channel_layer()
+        room_group_name = f'user_{instance.proposal_author.id}'
+
+        async_to_sync(channel_layer.group_send)(
+            room_group_name,
+            {
+                'type': 'has_new_message',
+            }
+        )

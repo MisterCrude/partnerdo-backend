@@ -41,77 +41,7 @@ def get_chatrooms(user):
         return None
 
 
-# class ChatConsumer(AsyncWebsocketConsumer):
-#     async def connect(self):
-#         self.user = self.scope['user']
-#         self.chatroom_id = self.scope['url_route']['kwargs']['chatroom_id']
-#         self.chatroom_status = await get_chatroom_satus(self.user, self.chatroom_id)
-
-#         self.room_group_name = 'chat_%s' % self.chatroom_id
-
-#         if self.user.is_anonymous:
-#             return await self.close()
-
-#         if not self.chatroom_status and self.chatroom_status != 1:
-#             return await self.close()
-
-#         await self.channel_layer.group_add(
-#             self.room_group_name,
-#             self.channel_name
-#         )
-
-#         await self.accept()
-#         await self.send_message_to_group()
-
-#     async def disconnect(self, close_code):
-#         if not self.user.is_anonymous:
-#             await self.channel_layer.group_discard(
-#                 self.room_group_name,
-#                 self.channel_name
-#             )
-
-#     async def receive(self, text_data):
-#         text_data_json = json.loads(text_data)
-#         message = text_data_json['message']
-
-#         try:
-#             chatroom_instance = await database_sync_to_async(Chatroom.objects.get)(pk=self.chatroom_id)
-
-#             await database_sync_to_async(Message.objects.create)(
-#                 content=message, author=self.user, chatroom=chatroom_instance)
-
-#             await self.send_message_to_group()
-#         except Exception:
-#             return await self.close()
-
-#     ##
-#     # Message types
-#     ##
-
-#     async def send_chatroom_message_list(self, event):
-#         message = event['message']
-#         message_type = event['type']
-
-#         await self.send(json.dumps({
-#             'message': message,
-#             'type': message_type,
-#         }))
-
-#     ##
-#     # Utils
-#     ##
-
-    # async def send_message_to_group(self):
-    #     await self.channel_layer.group_send(
-    #         self.room_group_name,
-    #         {
-    #             'message': await get_chatroom_messages(self.chatroom_id),
-    #             'type': MESSAGE_TYPE_LIST.get('SEND_CHATROOM_MESSAGE_LIST'),
-    #         }
-    #     )
-
-
-class ChatConsumerTest(AsyncJsonWebsocketConsumer):
+class ChatConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         self.user = self.scope['user']
 
@@ -123,7 +53,7 @@ class ChatConsumerTest(AsyncJsonWebsocketConsumer):
         chatrooms = await get_chatrooms(self.user)
 
         # Send chatrooms
-        room_group_name = f'chatroom_list_{self.user.id}'
+        room_group_name = f'user_{self.user.id}'
         await self.channel_layer.group_add(
             room_group_name,
             self.channel_name
@@ -137,9 +67,6 @@ class ChatConsumerTest(AsyncJsonWebsocketConsumer):
             })
 
     async def receive_json(self, content):
-        # text_data_json = json.loads(text_data)
-        # message = text_data_json['message']
-
         if content.get('type') == MESSAGE_TYPE_LIST.get('CONNECT_TO_CHATROOM'):
             self.chatroom_id = content.get('message')
             room_group_name = f'chatroom_message_list_{self.chatroom_id}'
@@ -171,10 +98,11 @@ class ChatConsumerTest(AsyncJsonWebsocketConsumer):
             #         'type': MESSAGE_TYPE_LIST.get('CHATROOM_MESSAGE_LIST'),
             #     })
 
-            print(111, chatroom_id)
-
     ##
     # Message types
+    # -------------
+    # intercept messages sended to the group
+    # and triggers WebSocket message
     ##
 
     async def chatroom_list(self, event):
@@ -195,6 +123,9 @@ class ChatConsumerTest(AsyncJsonWebsocketConsumer):
             'type': message_type,
         })
 
+    async def has_new_message(self, event):
+        message_type = event['type']
 
-# connect user
-# send his chatrooms
+        await self.send_json({
+            'type': message_type,
+        })
