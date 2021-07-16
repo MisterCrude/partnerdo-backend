@@ -1,3 +1,5 @@
+import asyncio
+
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.db.models import Q
@@ -66,13 +68,19 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 'type': MESSAGE_TYPE_LIST['CHATROOM_LIST'],
             })
 
+    async def disconnect(self, close_code):
+        self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+
     async def receive_json(self, content):
+        # CONNECT TO CHATROOM
         if content['type'] == MESSAGE_TYPE_LIST['CONNECT_TO_CHATROOM']:
             chatroom_id = content['message']
             room_group_name = f'chatroom_message_list_{chatroom_id}'
 
-            print(111)
-
+            # Don't remove it from here
             await self.channel_layer.group_add(
                 room_group_name,
                 self.channel_name
@@ -85,21 +93,61 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                     'type': MESSAGE_TYPE_LIST['CHATROOM_MESSAGE_LIST'],
                 })
 
+        # NEW CHAROOM MESSAGE
         if content['type'] == MESSAGE_TYPE_LIST['NEW_CHATROOM_MESSAGE']:
             chatroom_id = content['message']['chatroom_id']
             new_message = content['message']['text']
+
+            chatroom_instance_list = await database_sync_to_async(Chatroom.objects.filter)(pk=chatroom_id)
+            chatroom_instance = await database_sync_to_async(chatroom_instance_list.get)()
+            chat_participant = await database_sync_to_async(chatroom_instance_list.values_list)('proposal_author', 'initiator')
+
+            chat_participant_list = await database_sync_to_async(list)(chat_participant)
+            proposal_author_id, initiator_id = chat_participant_list[
+                0][0], chat_participant_list[0][1]
+
+            print(111 if initiator_id == self.user.id else 222)
+
+            participant_group_name = f'user_{proposal_author_id}' if self.user.id == initiator_id else f'user_{initiator_id}'
             room_group_name = f'chatroom_message_list_{chatroom_id}'
-            chatroom_instance = await database_sync_to_async(Chatroom.objects.get)(pk=chatroom_id)
 
             await database_sync_to_async(Message.objects.create)(
                 content=new_message, author=self.user, chatroom=chatroom_instance)
 
-            await self.channel_layer.group_send(
-                room_group_name,
-                {
-                    'message': await get_chatroom_messages(chatroom_id),
-                    'type': MESSAGE_TYPE_LIST['CHATROOM_MESSAGE_LIST'],
-                })
+            message_list = await get_chatroom_messages(chatroom_id)
+
+            # Run async tasks concurrently
+            # await asyncio.gather(
+            #     self.channel_layer.group_add(
+            #         room_group_name,
+            #         self.channel_name
+            #     ),
+            #     self.channel_layer.group_add(
+            #         participant_group_name,
+            #         self.channel_name
+            #     )
+            # )
+
+            # Run async tasks concurrently
+            await asyncio.gather(
+                self.channel_layer.group_send(
+                    room_group_name,
+                    {
+                        'message': message_list,
+                        'type': MESSAGE_TYPE_LIST['CHATROOM_MESSAGE_LIST'],
+                    }),
+                self.channel_layer.group_send(
+                    participant_group_name,
+                    {
+                        'message': message_list,
+                        'type': MESSAGE_TYPE_LIST['CHATROOM_MESSAGE_LIST'],
+                    }),
+                self.channel_layer.group_send(
+                    participant_group_name,
+                    {
+                        'type': MESSAGE_TYPE_LIST['HAS_NEW_MESSAGE'],
+                    }),
+            )
 
     ##
     # Message types

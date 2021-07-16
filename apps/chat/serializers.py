@@ -26,10 +26,14 @@ class ChatroomSerializer(serializers.ModelSerializer):
     initiator = ChatroomAuthorSerializer()
     proposal_author = ChatroomAuthorSerializer()
     proposal = ChatroomProposalSerializer()
+    message_total_amount = serializers.SerializerMethodField()
 
     class Meta:
         model = Chatroom
         fields = '__all__'
+
+    def get_message_total_amount(self, obj):
+        return obj.messages.count()
 
 
 class ChatroomCreateSerializer(serializers.ModelSerializer):

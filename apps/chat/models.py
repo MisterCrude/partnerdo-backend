@@ -10,6 +10,8 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext as _
 
+from .constants import MESSAGE_TYPE_LIST
+
 CHATROOM_OPEN_STATUS = [
     (0, _('Idle')),
     (1, _('Approved')),
@@ -76,14 +78,13 @@ def save_handler(instance, **kwargs):
 def change_staus_handler(instance, **kwargs):
     # Is new satatus approve or reject
     if instance.status != 0:
-
         channel_layer = get_channel_layer()
         room_group_name = f'user_{instance.initiator.id}'
 
         async_to_sync(channel_layer.group_send)(
             room_group_name,
             {
-                'type': 'has_new_message',
+                'type': MESSAGE_TYPE_LIST['HAS_NEW_MESSAGE'],
             }
         )
 
@@ -91,13 +92,12 @@ def change_staus_handler(instance, **kwargs):
 @receiver(post_save, sender=Chatroom)
 def create_chatroom_handler(instance, created, **kwargs):
     if created:
-
         channel_layer = get_channel_layer()
         room_group_name = f'user_{instance.proposal_author.id}'
 
         async_to_sync(channel_layer.group_send)(
             room_group_name,
             {
-                'type': 'has_new_message',
+                'type': MESSAGE_TYPE_LIST['HAS_NEW_MESSAGE'],
             }
         )
