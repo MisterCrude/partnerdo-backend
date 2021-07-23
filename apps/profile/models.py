@@ -36,6 +36,8 @@ class User(AbstractUser):
     Set name for custom user model ad 'User' otherwise it involve "auth_group" db error
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    channel_id = models.UUIDField(default=uuid.uuid4, help_text=_(
+        'Tehnikal hash id for connecting to django-channels'))
     # use models.DO_NOTHING for ability unpin avatar for chosen profile
     avatar = models.OneToOneField(
         ProfileAvatar, on_delete=models.SET_NULL, null=True, blank=True)

@@ -12,10 +12,11 @@ class MessgesInline(admin.TabularInline):
 @admin.register(Chatroom)
 class ChatroomAdmin(admin.ModelAdmin):
     readonly_fields = ['id', 'last_message',
-                       'chatroom', 'created', 'proposal_author']
+                       'channel_id', 'created', 'proposal_author']
     fieldsets = (
         (None, {
-            'fields': ('id', 'chatroom', 'status', 'proposal',  'proposal_author', 'initiator', 'initial_message', 'unread_message_number')
+            'fields': ('id', 'channel_id', 'status', 'proposal',  'proposal_author',
+                       'initiator', 'initial_message', 'unread_message_number')
         }),
         ('Dates', {
             'fields': ('last_message', 'created',),

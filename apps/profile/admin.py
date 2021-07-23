@@ -29,10 +29,12 @@ class UserAdmin(BaseUserAdmin):
     """
 
     fieldsets = replace_fields_for_useradmin(BaseUserAdmin.fieldsets, (_('Personal info'), {'fields': (
-        'id', 'first_name', 'last_name', 'email', ('avatar', 'avatar_thumb'),
+        'id', 'first_name', 'last_name', 'email', 'channel_id', (
+            'avatar', 'avatar_thumb'),
         'birth_year', 'gender', 'description')}))
 
-    readonly_fields = ['id', 'avatar_thumb', 'last_login', 'date_joined']
+    readonly_fields = ['id', 'channel_id',
+                       'avatar_thumb', 'last_login', 'date_joined']
 
     def avatar_thumb(self, obj):
         return create_admin_thumb(obj.avatar.image if obj.avatar else None)

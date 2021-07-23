@@ -42,6 +42,8 @@ class Message(models.Model):
 
 class Chatroom(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    channel_id = models.UUIDField(default=uuid.uuid4, help_text=_(
+        'Tehnikal hash id for connecting to django-channels'))
     initiator = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name='chatroom_initiator', on_delete=models.PROTECT)
     proposal_author = models.ForeignKey(
@@ -49,7 +51,6 @@ class Chatroom(models.Model):
     proposal = models.ForeignKey(
         'proposal.Proposal', related_name='chatrooms', on_delete=models.CASCADE)
     status = models.IntegerField(choices=CHATROOM_OPEN_STATUS, default=0)
-    chatroom = models.UUIDField(default=uuid.uuid4)
     last_message = models.DateTimeField(
         auto_now_add=True, help_text="Date of the last message")
     created = models.DateTimeField(auto_now_add=True)
@@ -68,7 +69,7 @@ class Chatroom(models.Model):
 # Signals
 ##
 
-
+#  TODO rewrite save method in model
 @receiver(pre_save, sender=Chatroom)
 def save_handler(instance, **kwargs):
     instance.proposal_author = instance.proposal.author
@@ -94,6 +95,8 @@ def create_chatroom_handler(instance, created, **kwargs):
     if created:
         channel_layer = get_channel_layer()
         room_group_name = f'user_{instance.proposal_author.id}'
+
+        # 2. Add channel name
 
         async_to_sync(channel_layer.group_send)(
             room_group_name,
