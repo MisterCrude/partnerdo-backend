@@ -42,8 +42,8 @@ class Message(models.Model):
 
 class Chatroom(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    channel_id = models.UUIDField(default=uuid.uuid4, help_text=_(
-        'Tehnikal hash id for connecting to django-channels'))
+    channel_name = models.CharField(max_length=100, help_text=_(
+        'Technical hash id for connecting to django-channels'))
     initiator = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name='chatroom_initiator', on_delete=models.PROTECT)
     proposal_author = models.ForeignKey(
@@ -58,22 +58,29 @@ class Chatroom(models.Model):
     unread_message_number = models.DecimalField(
         default=0, decimal_places=0, max_digits=10, validators=[MinValueValidator(0)])
 
+    class Meta:
+        ordering = ('-created',)
+
     def __str__(self):
         return str(self.id)
 
-    class Meta:
-        ordering = ('-created',)
+    def save(self, *args, **kwargs):
+
+        # Run only when create model instance
+        if self._state.adding:
+            # Set channel name
+            channel_layer = get_channel_layer()
+            self.channel_name = async_to_sync(channel_layer.new_channel)()
+
+            # Set proposal author
+            self.proposal_author = self.proposal.author
+
+        super(Chatroom, self).save(*args, **kwargs)
 
 
 ##
 # Signals
 ##
-
-#  TODO rewrite save method in model
-@receiver(pre_save, sender=Chatroom)
-def save_handler(instance, **kwargs):
-    instance.proposal_author = instance.proposal.author
-
 
 @receiver(post_save, sender=Chatroom)
 def change_staus_handler(instance, **kwargs):
