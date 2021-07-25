@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext as _
 
@@ -42,8 +42,6 @@ class Message(models.Model):
 
 class Chatroom(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    channel_name = models.CharField(max_length=100, help_text=_(
-        'Technical hash id for connecting to django-channels'))
     initiator = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name='chatroom_initiator', on_delete=models.PROTECT)
     proposal_author = models.ForeignKey(
@@ -68,10 +66,6 @@ class Chatroom(models.Model):
 
         # Run only when create model instance
         if self._state.adding:
-            # Set channel name
-            channel_layer = get_channel_layer()
-            self.channel_name = async_to_sync(channel_layer.new_channel)()
-
             # Set proposal author
             self.proposal_author = self.proposal.author
 

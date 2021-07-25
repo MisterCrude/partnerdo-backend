@@ -38,8 +38,6 @@ class User(AbstractUser):
     Set name for custom user model ad 'User' otherwise it involve "auth_group" db error
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    channel_name = models.CharField(max_length=100, help_text=_(
-        'Technical hash id for connecting to django-channels'))
     # use models.DO_NOTHING for ability unpin avatar for chosen profile
     avatar = models.OneToOneField(
         ProfileAvatar, on_delete=models.SET_NULL, null=True, blank=True)
@@ -53,14 +51,6 @@ class User(AbstractUser):
         if self.avatar:
             ProfileAvatar.objects.get(pk=self.avatar.id).delete()
         super(User, self).delete(*args, **kwargs)
-
-    def save(self, *args, **kwargs):
-        # Run only when create model instance
-        if self._state.adding:
-            channel_layer = get_channel_layer()
-            self.channel_name = async_to_sync(channel_layer.new_channel)()
-
-        super(User, self).save(*args, **kwargs)
 
 
 class Group(BaseGroup):
