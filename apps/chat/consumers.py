@@ -19,6 +19,21 @@ def get_chatroom_satus(user, chatroom_id):
 
 
 @database_sync_to_async
+def reset_unread_message_number(chatroom_id, user_id):
+    try:
+        chatroom = Chatroom.objects.filter(
+            id=chatroom_id)
+
+        if chatroom.filter(initiator__id=user_id).count():
+            chatroom.update(unread_message_number_for_initiator=0)
+        else:
+            chatroom.update(unread_message_number_for_proposal_author=0)
+
+    except Exception:
+        return None
+
+
+@database_sync_to_async
 def get_message_list(chatroom_id, amount=10):
     try:
         messages = Message.objects.order_by(
@@ -86,12 +101,15 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 self.channel_name
             )
 
-            await self.channel_layer.group_send(
-                room_group_name,
-                {
-                    'message': await get_message_list(chatroom_id),
-                    'type': MESSAGE_TYPE_LIST['CHATROOM_MESSAGE_LIST'],
-                })
+            await asyncio.gather(
+                reset_unread_message_number(chatroom_id, self.user.id),
+                self.channel_layer.group_send(
+                    room_group_name,
+                    {
+                        'message': await get_message_list(chatroom_id),
+                        'type': MESSAGE_TYPE_LIST['CHATROOM_MESSAGE_LIST'],
+                    })
+            )
 
         # NEW CHAROOM MESSAGE
         if content['type'] == MESSAGE_TYPE_LIST['NEW_CHATROOM_MESSAGE']:

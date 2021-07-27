@@ -4,7 +4,8 @@ from .models import Chatroom, Message
 
 
 class MessgesInline(admin.TabularInline):
-    readonly_fields = (id,)
+    readonly_fields = ['author']
+    fields = ['id', 'author', 'content']
     model = Message
     extra = 0
 
@@ -16,7 +17,7 @@ class ChatroomAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': ('id', 'status', 'proposal',  'proposal_author',
-                       'initiator', 'initial_message', 'unread_message_number')
+                       'initiator', 'initial_message', 'unread_message_number_for_proposal_author', 'unread_message_number_for_initiator')
         }),
         ('Dates', {
             'fields': ('last_message', 'created',),

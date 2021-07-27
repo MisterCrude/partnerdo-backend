@@ -39,6 +39,28 @@ class Message(models.Model):
     def __str__(self):
         return str(self.id)
 
+    def save(self, *args, **kwargs):
+        # Run only when create model instance
+
+        if self._state.adding:
+            chatroom = Chatroom.objects.filter(id=self.chatroom.id)
+
+            # Increment msg number for proposal author
+            if self.chatroom.initiator == self.author:
+                unread_message_number = chatroom.values_list(
+                    'unread_message_number_for_proposal_author', flat=True)[0]
+                chatroom.update(
+                    unread_message_number_for_proposal_author=unread_message_number+1)
+
+            # Increment msg number for initiaror
+            if self.chatroom.proposal_author == self.author:
+                unread_message_number = chatroom.values_list(
+                    'unread_message_number_for_initiator', flat=True)[0]
+                chatroom.update(
+                    unread_message_number_for_initiator=unread_message_number+1)
+
+        super(Message, self).save(*args, **kwargs)
+
 
 class Chatroom(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
@@ -53,7 +75,9 @@ class Chatroom(models.Model):
         auto_now_add=True, help_text="Date of the last message")
     created = models.DateTimeField(auto_now_add=True)
     initial_message = models.TextField(max_length=400)
-    unread_message_number = models.DecimalField(
+    unread_message_number_for_proposal_author = models.DecimalField(
+        default=0, decimal_places=0, max_digits=10, validators=[MinValueValidator(0)])
+    unread_message_number_for_initiator = models.DecimalField(
         default=0, decimal_places=0, max_digits=10, validators=[MinValueValidator(0)])
 
     class Meta:
@@ -63,7 +87,6 @@ class Chatroom(models.Model):
         return str(self.id)
 
     def save(self, *args, **kwargs):
-
         # Run only when create model instance
         if self._state.adding:
             # Set proposal author
@@ -96,8 +119,6 @@ def create_chatroom_handler(instance, created, **kwargs):
     if created:
         channel_layer = get_channel_layer()
         room_group_name = f'user_{instance.proposal_author.id}'
-
-        # 2. Add channel name
 
         async_to_sync(channel_layer.group_send)(
             room_group_name,
