@@ -47,15 +47,37 @@ def get_message_list(chatroom_id, amount=10):
 
 
 @database_sync_to_async
-def get_chatroom_list(user):
+def get_chatroom_list_and_nonification(user):
     try:
         chatrooms = Chatroom.objects.filter(
             Q(initiator=user) | Q(proposal_author=user))
         serializer = ChatroomSerializer(chatrooms, many=True)
+        chatroom_list = []
+        notifaication_list = []
 
-        return serializer.data
+        for item in serializer.data:
+            chatroom = dict(item)
+            proposal_author_message_number = float(
+                chatroom['unread_message_number_for_proposal_author'])
+            initiator_message_number = float(
+                chatroom['unread_message_number_for_initiator'])
+            proposal_author_id = dict(chatroom['proposal_author'])['id']
+
+            if proposal_author_id == str(user.id):
+                chatroom['unread_message_number'] = proposal_author_message_number
+                notifaication_list.append(proposal_author_message_number > 0)
+            else:
+                chatroom['unread_message_number'] = initiator_message_number
+                notifaication_list.append(initiator_message_number > 0)
+
+            del chatroom['unread_message_number_for_proposal_author']
+            del chatroom['unread_message_number_for_initiator']
+
+            chatroom_list.append(chatroom)
+
+        return chatroom_list, True in notifaication_list
     except Exception:
-        return None
+        return None, None
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
@@ -68,19 +90,31 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
         await self.accept()
 
-        chatrooms = await get_chatroom_list(self.user)
+        chatrooms, hasNotification = await get_chatroom_list_and_nonification(self.user)
 
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name,
         )
 
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'message': chatrooms,
-                'type': MESSAGE_TYPE_LIST['CHATROOM_LIST'],
-            })
+        if hasNotification:
+            # Run async tasks concurrently
+            await asyncio.gather(
+                self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'message': chatrooms,
+                        'type': MESSAGE_TYPE_LIST['CHATROOM_LIST'],
+                    }),
+                self.group_send_has_notification(self.room_group_name)
+            )
+        else:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'message': chatrooms,
+                    'type': MESSAGE_TYPE_LIST['CHATROOM_LIST'],
+                }),
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
@@ -106,7 +140,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 self.channel_layer.group_send(
                     room_group_name,
                     {
-                        'message': await get_message_list(chatroom_id),
+                        'message': message_list,
                         'type': MESSAGE_TYPE_LIST['CHATROOM_MESSAGE_LIST'],
                     })
             )
@@ -141,12 +175,15 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                         'type': MESSAGE_TYPE_LIST['CHATROOM_MESSAGE_LIST'],
                         'message': message_list,
                     }),
-                self.channel_layer.group_send(
-                    participant_group_name,
-                    {
-                        'type': MESSAGE_TYPE_LIST['HAS_NEW_MESSAGE'],
-                    }),
+                self.group_send_has_notification(participant_group_name)
             )
+
+    async def group_send_has_notification(self, room_group_name):
+        await self.channel_layer.group_send(
+            room_group_name,
+            {
+                'type': MESSAGE_TYPE_LIST['HAS_NOTIFICATION'],
+            })
 
     ##
     # Message types
@@ -174,11 +211,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             'type': message_type,
         })
 
-    async def has_new_message(self, event):
+    async def has_notification(self, event):
         message_type = event['type']
-        message = event['message']
 
         await self.send_json({
             'type': message_type,
-            'message': message,
         })

@@ -109,7 +109,7 @@ def change_staus_handler(instance, **kwargs):
         async_to_sync(channel_layer.group_send)(
             room_group_name,
             {
-                'type': MESSAGE_TYPE_LIST['HAS_NEW_MESSAGE'],
+                'type': MESSAGE_TYPE_LIST['HAS_NOTIFICATION'],
             }
         )
 
@@ -123,6 +123,6 @@ def create_chatroom_handler(instance, created, **kwargs):
         async_to_sync(channel_layer.group_send)(
             room_group_name,
             {
-                'type': MESSAGE_TYPE_LIST['HAS_NEW_MESSAGE'],
+                'type': MESSAGE_TYPE_LIST['HAS_NOTIFICATION'],
             }
         )
