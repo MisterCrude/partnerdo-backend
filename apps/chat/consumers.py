@@ -1,5 +1,6 @@
 import asyncio
 
+from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.db.models import Q
@@ -42,6 +43,21 @@ def get_message_list(chatroom_id, amount=10):
         serializer = MessageSerializer(reversed(message_slice), many=True)
 
         return serializer.data
+    except Exception:
+        return None
+
+
+@database_sync_to_async
+def get_participant_ids(chatroom_id):
+    try:
+        chatroom_instance_list = Chatroom.objects.filter(pk=chatroom_id)
+        chat_participant = chatroom_instance_list.values_list(
+            'proposal_author', 'initiator')
+        chat_participant_list = list(chat_participant)
+        proposal_author_id, initiator_id = chat_participant_list[
+            0][0], chat_participant_list[0][1]
+
+        return proposal_author_id, initiator_id
     except Exception:
         return None
 
@@ -127,8 +143,13 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         if content['type'] == MESSAGE_TYPE_LIST['CONNECT_TO_CHATROOM']:
             chatroom_id = content['message']
             room_group_name = f'message_list_{chatroom_id}'
+            room_group_name = f'message_list_{chatroom_id}'
 
             message_list = await get_message_list(chatroom_id)
+            proposal_author_id, initiator_id = await get_participant_ids(chatroom_id)
+
+            await reset_unread_message_number(chatroom_id, self.user.id)
+            chatroom_list, has_notification = await get_chatroom_list_and_nonification(self.user.id)
 
             await self.channel_layer.group_add(
                 room_group_name,
@@ -136,13 +157,18 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             )
 
             await asyncio.gather(
-                reset_unread_message_number(chatroom_id, self.user.id),
                 self.channel_layer.group_send(
                     room_group_name,
                     {
                         'message': message_list,
                         'type': MESSAGE_TYPE_LIST['CHATROOM_MESSAGE_LIST'],
-                    })
+                    }),
+                self.channel_layer.group_send(
+                    self.user_room_group_name,
+                    {
+                        'message': chatroom_list,
+                        'type': MESSAGE_TYPE_LIST['CHATROOM_LIST'],
+                    }),
             )
 
         # NEW CHAROOM MESSAGE
@@ -150,14 +176,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             chatroom_id = content['message']['chatroom_id']
             new_message = content['message']['text']
 
-            # TODO refactor it
             chatroom_instance_list = await database_sync_to_async(Chatroom.objects.filter)(pk=chatroom_id)
             chatroom_instance = await database_sync_to_async(chatroom_instance_list.get)()
-            chat_participant = await database_sync_to_async(chatroom_instance_list.values_list)('proposal_author', 'initiator')
-
-            chat_participant_list = await database_sync_to_async(list)(chat_participant)
-            proposal_author_id, initiator_id = chat_participant_list[
-                0][0], chat_participant_list[0][1]
+            proposal_author_id, initiator_id = await get_participant_ids(chatroom_id)
 
             participant_id = proposal_author_id if self.user.id == initiator_id else initiator_id
             participant_group_name = f'user_{participant_id}'
