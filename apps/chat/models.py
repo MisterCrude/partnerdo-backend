@@ -1,22 +1,13 @@
 import uuid
 
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.utils.translation import ugettext as _
 
-from .constants import MESSAGE_TYPE_LIST
-
-CHATROOM_OPEN_STATUS = [
-    (0, _('Idle')),
-    (1, _('Approved')),
-    (2, _('Rejected')),
-]
+from .constants import (INITIATOR_NOTIFICATION_TYPE_CHOISE, NOTIFICATION_TYPE,
+                        PROPOSAL_AUTHOR_NOTIFICATION_TYPE_CHOISE,
+                        STATUS_CHOISE)
 
 
 class Message(models.Model):
@@ -27,6 +18,7 @@ class Message(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     chatroom = models.ForeignKey(
         'Chatroom', related_name='messages', on_delete=models.CASCADE)
+    is_unread = models.BooleanField(default=True)
 
     def clean(self):
         chatroom_initiator = self.chatroom.initiator
@@ -40,45 +32,44 @@ class Message(models.Model):
         return str(self.id)
 
     def save(self, *args, **kwargs):
-        # Run only when create model instance
-
         if self._state.adding:
-            chatroom = Chatroom.objects.filter(id=self.chatroom.id)
+            chatroom_object_list = Chatroom.objects
+            initiator = chatroom_object_list.values_list(
+                'initiator', flat=True).get(id=self.chatroom.id)
+            filtered = chatroom_object_list.filter(id=self.chatroom.id)
 
-            # Increment msg number for proposal author
-            if self.chatroom.initiator == self.author:
-                unread_message_number = chatroom.values_list(
-                    'unread_message_number_for_proposal_author', flat=True)[0]
-                chatroom.update(
-                    unread_message_number_for_proposal_author=unread_message_number+1)
-
-            # Increment msg number for initiaror
-            if self.chatroom.proposal_author == self.author:
-                unread_message_number = chatroom.values_list(
-                    'unread_message_number_for_initiator', flat=True)[0]
-                chatroom.update(
-                    unread_message_number_for_initiator=unread_message_number+1)
+            if initiator == self.author:
+                filtered.update(
+                    proposal_author_notification_type=NOTIFICATION_TYPE['NEW_MESSAGE'])
+            else:
+                filtered.update(
+                    initiator_notification_type=NOTIFICATION_TYPE['NEW_MESSAGE'])
 
         super(Message, self).save(*args, **kwargs)
 
 
 class Chatroom(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    initiator = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='chatroom_initiator', on_delete=models.PROTECT)
-    proposal_author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='chatroom_author', on_delete=models.PROTECT)
-    proposal = models.ForeignKey(
-        'proposal.Proposal', related_name='chatrooms', on_delete=models.CASCADE)
-    status = models.IntegerField(choices=CHATROOM_OPEN_STATUS, default=0)
-    last_message = models.DateTimeField(
-        auto_now_add=True, help_text="Date of the last message")
+    initiator = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                  related_name='chatroom_initiator',
+                                  on_delete=models.PROTECT)
+    proposal_author = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                        related_name='chatroom_author',
+                                        on_delete=models.PROTECT)
+    proposal = models.ForeignKey('proposal.Proposal',
+                                 related_name='chatrooms',
+                                 on_delete=models.CASCADE)
+    status = models.IntegerField(choices=STATUS_CHOISE, default=0)
+    last_message = models.DateTimeField(auto_now_add=True,
+                                        help_text="Date of the last message")
     created = models.DateTimeField(auto_now_add=True)
     initial_message = models.TextField(max_length=400)
-    unread_message_number_for_proposal_author = models.DecimalField(
-        default=0, decimal_places=0, max_digits=10, validators=[MinValueValidator(0)])
-    unread_message_number_for_initiator = models.DecimalField(
-        default=0, decimal_places=0, max_digits=10, validators=[MinValueValidator(0)])
+    initiator_notification_type = models.CharField(choices=INITIATOR_NOTIFICATION_TYPE_CHOISE,
+                                                   default=NOTIFICATION_TYPE['IDLE'],
+                                                   max_length=2)
+    proposal_author_notification_type = models.CharField(choices=PROPOSAL_AUTHOR_NOTIFICATION_TYPE_CHOISE,
+                                                         default=NOTIFICATION_TYPE['IDLE'],
+                                                         max_length=2)
 
     class Meta:
         ordering = ('-created',)
@@ -87,42 +78,8 @@ class Chatroom(models.Model):
         return str(self.id)
 
     def save(self, *args, **kwargs):
-        # Run only when create model instance
         if self._state.adding:
-            # Set proposal author
             self.proposal_author = self.proposal.author
+            self.proposal_author_notification_type = NOTIFICATION_TYPE['CREATE_CHATROOM']
 
         super(Chatroom, self).save(*args, **kwargs)
-
-
-##
-# Signals
-##
-
-@receiver(post_save, sender=Chatroom)
-def change_staus_handler(instance, **kwargs):
-    # Is new satatus approve or reject
-    if instance.status != 0:
-        channel_layer = get_channel_layer()
-        room_group_name = f'user_{instance.initiator.id}'
-
-        async_to_sync(channel_layer.group_send)(
-            room_group_name,
-            {
-                'type': MESSAGE_TYPE_LIST['HAS_NOTIFICATION'],
-            }
-        )
-
-
-@receiver(post_save, sender=Chatroom)
-def create_chatroom_handler(instance, created, **kwargs):
-    if created:
-        channel_layer = get_channel_layer()
-        room_group_name = f'user_{instance.proposal_author.id}'
-
-        async_to_sync(channel_layer.group_send)(
-            room_group_name,
-            {
-                'type': MESSAGE_TYPE_LIST['HAS_NOTIFICATION'],
-            }
-        )

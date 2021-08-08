@@ -1,40 +1,42 @@
 import asyncio
 
-from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.db.models import Q
 
-from .constants import MESSAGE_TYPE_LIST
+from .constants import MESSAGE_TYPE_LIST, NOTIFICATION_TYPE
 from .models import Chatroom, Message
 from .serializers import ChatroomSerializer, MessageSerializer
 
 
-@database_sync_to_async
-def get_chatroom_satus(user, chatroom_id):
+def reset_unread_message_number_and_status_notification(chatroom_id, user_id):
     try:
-        return Chatroom.objects.values_list('status').get(
-            Q(pk=chatroom_id), Q(initiator=user) | Q(proposal_author=user))[0]
-    except Exception:
-        return None
-
-
-@database_sync_to_async
-def reset_unread_message_number(chatroom_id, user_id):
-    try:
-        chatroom = Chatroom.objects.filter(
+        chatroom_object_list = Chatroom.objects
+        chatroom_filtered_queryset = chatroom_object_list.filter(
             id=chatroom_id)
+        chatroom_queryset = chatroom_object_list.get(id=chatroom_id)
 
-        if chatroom.filter(initiator__id=user_id).count():
-            chatroom.update(unread_message_number_for_initiator=0)
+        initiator_id = Chatroom.objects.values_list(
+            'initiator', flat=True).get(id=chatroom_id)
+
+        if initiator_id == user_id:
+            chatroom_filtered_queryset.update(
+                initiator_notification_type=NOTIFICATION_TYPE['IDLE'])
         else:
-            chatroom.update(unread_message_number_for_proposal_author=0)
+            chatroom_filtered_queryset.update(
+                proposal_author_notification_type=NOTIFICATION_TYPE['IDLE'])
 
+        message_list_queryset = chatroom_queryset.messages.exclude(
+            author=user_id)
+
+        if message_list_queryset.count() > 0:
+            for message_queryset in message_list_queryset:
+                message = Message.objects.filter(id=message_queryset.id)
+                message.update(is_unread=False)
     except Exception:
         return None
 
 
-@database_sync_to_async
 def get_message_list(chatroom_id, amount=10):
     try:
         messages = Message.objects.order_by(
@@ -47,51 +49,60 @@ def get_message_list(chatroom_id, amount=10):
         return None
 
 
-@database_sync_to_async
-def get_participant_ids(chatroom_id):
+def get_participant_id_list(chatroom_id):
     try:
         chatroom_instance_list = Chatroom.objects.filter(pk=chatroom_id)
         chat_participant = chatroom_instance_list.values_list(
             'proposal_author', 'initiator')
         chat_participant_list = list(chat_participant)
-        proposal_author_id, initiator_id = chat_participant_list[
-            0][0], chat_participant_list[0][1]
+        proposal_author_id, initiator_id = chat_participant_list[0][0], chat_participant_list[0][1]
 
         return proposal_author_id, initiator_id
     except Exception:
         return None
 
 
-@database_sync_to_async
-def get_chatroom_list_and_nonification(user_id):
+def get_chatroom_list_and_nonification_type(user_id):
     try:
         chatrooms = Chatroom.objects.filter(
             Q(initiator__id=user_id) | Q(proposal_author__id=user_id))
-        serializer = ChatroomSerializer(chatrooms, many=True)
         chatroom_list = []
-        notifaication_list = []
+        notification_list = []
 
-        for item in serializer.data:
-            chatroom = dict(item)
-            proposal_author_message_number = float(
-                chatroom['unread_message_number_for_proposal_author'])
-            initiator_message_number = float(
-                chatroom['unread_message_number_for_initiator'])
-            proposal_author_id = dict(chatroom['proposal_author'])['id']
+        for chatroom in chatrooms:
+            chatroom_serializer = ChatroomSerializer(chatroom)
+            chatroom_data = dict(chatroom_serializer.data)
 
+            proposal_author_id = dict(chatroom_data['proposal_author'])['id']
+            initiator_id = dict(chatroom_data['initiator'])['id']
+
+            unread_message_number = 0
+            notification_type = NOTIFICATION_TYPE['IDLE']
+
+            # count unread messages and get notification type for current user
             if proposal_author_id == str(user_id):
-                chatroom['unread_message_number'] = proposal_author_message_number
-                notifaication_list.append(proposal_author_message_number > 0)
-            else:
-                chatroom['unread_message_number'] = initiator_message_number
-                notifaication_list.append(initiator_message_number > 0)
+                notification_type = chatroom_data['proposal_author_notification_type']
+                unread_message_number = chatroom.messages.filter(
+                    is_unread=True, author__id=proposal_author_id).count()
 
-            del chatroom['unread_message_number_for_proposal_author']
-            del chatroom['unread_message_number_for_initiator']
+            if initiator_id == str(user_id):
+                notification_type = chatroom_data['initiator_notification_type']
+                unread_message_number = chatroom.messages.filter(
+                    is_unread=True, author__id=initiator_id).count()
 
-            chatroom_list.append(chatroom)
+            del chatroom_data['proposal_author_notification_type']
+            del chatroom_data['initiator_notification_type']
 
-        return chatroom_list, True in notifaication_list
+            chatroom_data['unread_message_number'] = unread_message_number
+            chatroom_data['notification_type'] = notification_type
+
+            chatroom_list.append(chatroom_data)
+            notification_list.append(
+                chatroom_data['notification_type'] != NOTIFICATION_TYPE['IDLE'])
+
+        has_notification = True in notification_list
+
+        return chatroom_list, has_notification
     except Exception:
         return None, None
 
@@ -106,31 +117,24 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
         await self.accept()
 
-        chatrooms, hasNotification = await get_chatroom_list_and_nonification(self.user.id)
+        chatroom_list, has_notification = await database_sync_to_async(get_chatroom_list_and_nonification_type)(self.user.id)
 
         await self.channel_layer.group_add(
             self.user_room_group_name,
             self.channel_name,
         )
 
-        if hasNotification:
-            # Run async tasks concurrently
-            await asyncio.gather(
-                self.channel_layer.group_send(
-                    self.user_room_group_name,
-                    {
-                        'message': chatrooms,
-                        'type': MESSAGE_TYPE_LIST['CHATROOM_LIST'],
-                    }),
-                self.group_send_has_notification(self.user_room_group_name)
-            )
-        else:
-            await self.channel_layer.group_send(
+        await asyncio.gather(
+            self.channel_layer.group_send(
                 self.user_room_group_name,
                 {
-                    'message': chatrooms,
+                    'message': {
+                        "chatroom_list": chatroom_list,
+                        "has_notification": has_notification
+                    },
                     'type': MESSAGE_TYPE_LIST['CHATROOM_LIST'],
                 }),
+        )
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
@@ -145,11 +149,12 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             room_group_name = f'message_list_{chatroom_id}'
             room_group_name = f'message_list_{chatroom_id}'
 
-            message_list = await get_message_list(chatroom_id)
-            proposal_author_id, initiator_id = await get_participant_ids(chatroom_id)
+            message_list = await database_sync_to_async(get_message_list)(chatroom_id)
+            proposal_author_id, initiator_id = await database_sync_to_async(get_participant_id_list)(chatroom_id)
 
-            await reset_unread_message_number(chatroom_id, self.user.id)
-            chatroom_list, has_notification = await get_chatroom_list_and_nonification(self.user.id)
+            await database_sync_to_async(reset_unread_message_number_and_status_notification)(chatroom_id, self.user.id)
+
+            chatroom_list, has_notification = await database_sync_to_async(get_chatroom_list_and_nonification_type)(self.user.id)
 
             await self.channel_layer.group_add(
                 room_group_name,
@@ -161,24 +166,27 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                     room_group_name,
                     {
                         'message': message_list,
-                        'type': MESSAGE_TYPE_LIST['CHATROOM_MESSAGE_LIST'],
+                        'type': MESSAGE_TYPE_LIST['MESSAGE_LIST'],
                     }),
                 self.channel_layer.group_send(
                     self.user_room_group_name,
                     {
-                        'message': chatroom_list,
+                        'message': {
+                            "chatroom_list": chatroom_list,
+                            "has_notification": has_notification
+                        },
                         'type': MESSAGE_TYPE_LIST['CHATROOM_LIST'],
                     }),
             )
 
-        # NEW CHAROOM MESSAGE
-        if content['type'] == MESSAGE_TYPE_LIST['NEW_CHATROOM_MESSAGE']:
+        # CHAROOM MESSAGE
+        if content['type'] == MESSAGE_TYPE_LIST['CHATROOM_MESSAGE']:
             chatroom_id = content['message']['chatroom_id']
             new_message = content['message']['text']
 
             chatroom_instance_list = await database_sync_to_async(Chatroom.objects.filter)(pk=chatroom_id)
             chatroom_instance = await database_sync_to_async(chatroom_instance_list.get)()
-            proposal_author_id, initiator_id = await get_participant_ids(chatroom_id)
+            proposal_author_id, initiator_id = await database_sync_to_async(get_participant_id_list)(chatroom_id)
 
             participant_id = proposal_author_id if self.user.id == initiator_id else initiator_id
             participant_group_name = f'user_{participant_id}'
@@ -187,32 +195,27 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             await database_sync_to_async(Message.objects.create)(
                 content=new_message, author=self.user, chatroom=chatroom_instance)
 
-            message_list = await get_message_list(chatroom_id)
-            chatroom_list, has_notification = await get_chatroom_list_and_nonification(participant_id)
+            message_list = await database_sync_to_async(get_message_list)(chatroom_id)
+            chatroom_list, has_notification = await database_sync_to_async(get_chatroom_list_and_nonification_type)(participant_id)
 
             # Run async tasks concurrently
             await asyncio.gather(
                 self.channel_layer.group_send(
                     room_group_name,
                     {
-                        'type': MESSAGE_TYPE_LIST['CHATROOM_MESSAGE_LIST'],
+                        'type': MESSAGE_TYPE_LIST['MESSAGE_LIST'],
                         'message': message_list,
                     }),
                 self.channel_layer.group_send(
                     participant_group_name,
                     {
-                        'message': chatroom_list,
+                        'message': {
+                            "chatroom_list": chatroom_list,
+                            "has_notification": has_notification
+                        },
                         'type': MESSAGE_TYPE_LIST['CHATROOM_LIST'],
                     }),
-                self.group_send_has_notification(participant_group_name)
             )
-
-    async def group_send_has_notification(self, room_group_name):
-        await self.channel_layer.group_send(
-            room_group_name,
-            {
-                'type': MESSAGE_TYPE_LIST['HAS_NOTIFICATION'],
-            })
 
     ##
     # Message types
@@ -221,7 +224,6 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     # and triggers WebSocket message
     ##
 
-    # TODO merge it
     async def chatroom_list(self, event):
         message = event['message']
         message_type = event['type']
@@ -231,18 +233,11 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             'message': message,
         })
 
-    async def chatroom_message_list(self, event):
+    async def message_list(self, event):
         message = event['message']
         message_type = event['type']
 
         await self.send_json({
             'message': message,
-            'type': message_type,
-        })
-
-    async def has_notification(self, event):
-        message_type = event['type']
-
-        await self.send_json({
             'type': message_type,
         })
