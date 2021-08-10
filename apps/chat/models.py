@@ -49,6 +49,8 @@ class Message(models.Model):
 
 
 class Chatroom(models.Model):
+    _is_status_changed = models.BooleanField(default=False, editable=False)
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     initiator = models.ForeignKey(settings.AUTH_USER_MODEL,
                                   related_name='chatroom_initiator',
@@ -81,5 +83,8 @@ class Chatroom(models.Model):
         if self._state.adding:
             self.proposal_author = self.proposal.author
             self.proposal_author_notification_type = NOTIFICATION_TYPE['CREATE_CHATROOM']
+
+        if not self._state.adding and not self._is_status_changed and self.status != 0:
+            self.proposal_author_notification_type = NOTIFICATION_TYPE['CHANGE_STATUS']
 
         super(Chatroom, self).save(*args, **kwargs)

@@ -8,26 +8,33 @@ from .constants import MESSAGE_TYPE_LIST
 from .consumers import get_chatroom_list_and_nonification_type
 from .models import Chatroom
 
-# @receiver(post_save, sender=Chatroom)
-# def change_staus_handler(instance, **kwargs):
-# Is new satatus approve or reject
-# if instance.has_status_notification:
-#     channel_layer = get_channel_layer()
-#     room_group_name = f'user_{instance.initiator.id}'
 
-#     chatroom_list, has_notification = get_chatroom_list_and_nonification(
-#         instance.proposal_author.id)
+@receiver(post_save, sender=Chatroom)
+def change_staus_handler(instance, created, **kwargs):
+    if not created and not instance._is_status_changed and instance.status != 0:
+        channel_layer = get_channel_layer()
+        room_group_name = f'user_{instance.initiator.id}'
 
-#     async_to_sync(channel_layer.group_send)(
-#         room_group_name,
-#         {
-#             'message': {
-#                 "chatroom_list": chatroom_list,
-#                 "has_notification": has_notification
-#             },
-#             'type': MESSAGE_TYPE_LIST['CHATROOM_LIST'],
-#         },
-#     )
+        chatroom = Chatroom.objects.filter(id=instance.id)
+        chatroom.update(_is_status_changed=True)
+
+        chatroom_list, notification_type = get_chatroom_list_and_nonification_type(
+            instance.proposal_author.id)
+
+        async_to_sync(channel_layer.group_send)(
+            room_group_name,
+            {
+                'message': {
+                    "chatroom_list": chatroom_list,
+                    "has_notification": notification_type
+                },
+                'type': MESSAGE_TYPE_LIST['CHATROOM_LIST'],
+            },
+        )
+
+    if not created and instance._is_status_changed and instance.status == 0:
+        chatroom = Chatroom.objects.filter(id=instance.id)
+        chatroom.update(_is_status_changed=False)
 
 
 @receiver(post_save, sender=Chatroom)
@@ -36,7 +43,7 @@ def create_chatroom_handler(instance, created, **kwargs):
         channel_layer = get_channel_layer()
         room_group_name = f'user_{instance.proposal_author.id}'
 
-        chatroom_list, has_notification = get_chatroom_list_and_nonification_type(
+        chatroom_list, notification_type = get_chatroom_list_and_nonification_type(
             instance.proposal_author.id)
 
         async_to_sync(channel_layer.group_send)(
@@ -44,7 +51,7 @@ def create_chatroom_handler(instance, created, **kwargs):
             {
                 'message': {
                     "chatroom_list": chatroom_list,
-                    "has_notification": has_notification
+                    "has_notification": notification_type
                 },
                 'type': MESSAGE_TYPE_LIST['CHATROOM_LIST'],
             }),
