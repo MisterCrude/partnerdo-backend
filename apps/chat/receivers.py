@@ -4,14 +4,14 @@ from channels.layers import get_channel_layer
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from .constants import MESSAGE_TYPE_LIST
+from .constants import MESSAGE_TYPE_LIST, STATUS_TYPE
 from .consumers import get_chatroom_list_and_nonification_type
 from .models import Chatroom
 
 
 @receiver(post_save, sender=Chatroom)
 def change_staus_handler(instance, created, **kwargs):
-    if not created and not instance._is_status_changed and instance.status != 0:
+    if not created and not instance._is_status_changed and instance.status != STATUS_TYPE['IDLE']:
         channel_layer = get_channel_layer()
         room_group_name = f'user_{instance.initiator.id}'
 
@@ -32,7 +32,7 @@ def change_staus_handler(instance, created, **kwargs):
             },
         )
 
-    if not created and instance._is_status_changed and instance.status == 0:
+    if not created and instance._is_status_changed and instance.status == STATUS_TYPE['IDLE']:
         chatroom = Chatroom.objects.filter(id=instance.id)
         chatroom.update(_is_status_changed=False)
 

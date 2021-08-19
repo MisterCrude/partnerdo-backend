@@ -7,7 +7,7 @@ from django.utils.translation import ugettext as _
 
 from .constants import (INITIATOR_NOTIFICATION_TYPE_CHOISE, NOTIFICATION_TYPE,
                         PROPOSAL_AUTHOR_NOTIFICATION_TYPE_CHOISE,
-                        STATUS_CHOISE)
+                        STATUS_CHOISE, STATUS_TYPE)
 
 
 class Message(models.Model):
@@ -61,7 +61,9 @@ class Chatroom(models.Model):
     proposal = models.ForeignKey('proposal.Proposal',
                                  related_name='chatrooms',
                                  on_delete=models.CASCADE)
-    status = models.IntegerField(choices=STATUS_CHOISE, default=0)
+    status = models.CharField(choices=STATUS_CHOISE,
+                              default=STATUS_TYPE['IDLE'],
+                              max_length=2)
     last_message = models.DateTimeField(auto_now_add=True,
                                         help_text="Date of the last message")
     created = models.DateTimeField(auto_now_add=True)
@@ -84,7 +86,7 @@ class Chatroom(models.Model):
             self.proposal_author = self.proposal.author
             self.proposal_author_notification_type = NOTIFICATION_TYPE['CREATE_CHATROOM']
 
-        if not self._state.adding and not self._is_status_changed and self.status != 0:
+        if not self._state.adding and not self._is_status_changed and self.status != STATUS_TYPE['IDLE']:
             self.proposal_author_notification_type = NOTIFICATION_TYPE['CHANGE_STATUS']
 
         super(Chatroom, self).save(*args, **kwargs)

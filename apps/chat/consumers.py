@@ -77,6 +77,7 @@ def get_chatroom_list_and_nonification_type(user_id):
             initiator_id = dict(chatroom_data['initiator'])['id']
 
             unread_message_number = 0
+            companion = chatroom_data['initiator']
             notification_type = NOTIFICATION_TYPE['IDLE']
 
             # count unread messages and get notification type for current user
@@ -86,15 +87,19 @@ def get_chatroom_list_and_nonification_type(user_id):
                     is_unread=True, author__id=proposal_author_id).count()
 
             if initiator_id == str(user_id):
+                companion = chatroom_data['proposal_author']
                 notification_type = chatroom_data['initiator_notification_type']
                 unread_message_number = chatroom.messages.filter(
                     is_unread=True, author__id=initiator_id).count()
 
             del chatroom_data['proposal_author_notification_type']
             del chatroom_data['initiator_notification_type']
+            del chatroom_data['proposal_author']
+            del chatroom_data['initiator']
 
             chatroom_data['unread_message_number'] = unread_message_number
             chatroom_data['notification_type'] = notification_type
+            chatroom_data['companion'] = companion
 
             chatroom_list.append(chatroom_data)
             notification_list.append(

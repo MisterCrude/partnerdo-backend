@@ -9,11 +9,6 @@ MESSAGE_TYPE_LIST = {
     'NOTIFICATION_TYPE': 'notification_type'
 }
 
-STATUS_CHOISE = [
-    (0, _('Idle')),
-    (1, _('Approved')),
-    (2, _('Rejected')),
-]
 
 NOTIFICATION_TYPE = {
     'IDLE': 'ID',
@@ -21,6 +16,18 @@ NOTIFICATION_TYPE = {
     'CHANGE_STATUS': 'CS',
     'CREATE_CHATROOM': 'CM',
 }
+
+STATUS_TYPE = {
+    'IDLE': 'ID',
+    'APPROVED': 'AP',
+    'REJECTED': 'RJ',
+}
+
+STATUS_CHOISE = [
+    (STATUS_TYPE['IDLE'], _('Idle')),
+    (STATUS_TYPE['APPROVED'], _('Approved')),
+    (STATUS_TYPE['REJECTED'], _('Rejected')),
+]
 
 INITIATOR_NOTIFICATION_TYPE_CHOISE = [
     (NOTIFICATION_TYPE['CHANGE_STATUS'], _('Change status')),
