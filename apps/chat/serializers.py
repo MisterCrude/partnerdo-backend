@@ -16,10 +16,8 @@ class ChatroomAuthorSerializer(AuthorSerializer):
 
 
 class ChatroomProposalSerializer(ProposalSerializer):
-    author = None
-
     class Meta(ProposalSerializer.Meta):
-        exclude = ('updated', 'description', 'author', 'created')
+        exclude = ('updated', 'description', 'created')
 
 
 class ChatroomSerializer(serializers.ModelSerializer):
@@ -30,7 +28,7 @@ class ChatroomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Chatroom
-        fields = '__all__'
+        exclude = ('_is_status_changed',)
 
     def get_message_total_amount(self, obj):
         return obj.messages.count()

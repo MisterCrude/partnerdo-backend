@@ -6,10 +6,11 @@ from django.db.models import Q
 
 from .constants import MESSAGE_TYPE_LIST, NOTIFICATION_TYPE
 from .models import Chatroom, Message
-from .serializers import ChatroomSerializer, MessageSerializer
+from .serializers import MessageSerializer
+from .utils import prepare_chatroom_serializer
 
 
-def reset_unread_message_number_and_status_notification(chatroom_id, user_id):
+def reset_unread_message_amount_and_status_notification(chatroom_id, user_id):
     try:
         chatroom_object_list = Chatroom.objects
         chatroom_filtered_queryset = chatroom_object_list.filter(
@@ -70,40 +71,12 @@ def get_chatroom_list_and_nonification_type(user_id):
         notification_list = []
 
         for chatroom in chatrooms:
-            chatroom_serializer = ChatroomSerializer(chatroom)
-            chatroom_data = dict(chatroom_serializer.data)
+            chatroom_serialized_data = prepare_chatroom_serializer(
+                chatroom, user_id)
 
-            proposal_author_id = dict(chatroom_data['proposal_author'])['id']
-            initiator_id = dict(chatroom_data['initiator'])['id']
-
-            unread_message_number = 0
-            companion = chatroom_data['initiator']
-            notification_type = NOTIFICATION_TYPE['IDLE']
-
-            # count unread messages and get notification type for current user
-            if proposal_author_id == str(user_id):
-                notification_type = chatroom_data['proposal_author_notification_type']
-                unread_message_number = chatroom.messages.filter(
-                    is_unread=True, author__id=proposal_author_id).count()
-
-            if initiator_id == str(user_id):
-                companion = chatroom_data['proposal_author']
-                notification_type = chatroom_data['initiator_notification_type']
-                unread_message_number = chatroom.messages.filter(
-                    is_unread=True, author__id=initiator_id).count()
-
-            del chatroom_data['proposal_author_notification_type']
-            del chatroom_data['initiator_notification_type']
-            del chatroom_data['proposal_author']
-            del chatroom_data['initiator']
-
-            chatroom_data['unread_message_number'] = unread_message_number
-            chatroom_data['notification_type'] = notification_type
-            chatroom_data['companion'] = companion
-
-            chatroom_list.append(chatroom_data)
+            chatroom_list.append(chatroom_serialized_data)
             notification_list.append(
-                chatroom_data['notification_type'] != NOTIFICATION_TYPE['IDLE'])
+                chatroom_serialized_data['notification_type'] != NOTIFICATION_TYPE['IDLE'])
 
         has_notification = True in notification_list
 
@@ -157,7 +130,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             message_list = await database_sync_to_async(get_message_list)(chatroom_id)
             proposal_author_id, initiator_id = await database_sync_to_async(get_participant_id_list)(chatroom_id)
 
-            await database_sync_to_async(reset_unread_message_number_and_status_notification)(chatroom_id, self.user.id)
+            await database_sync_to_async(reset_unread_message_amount_and_status_notification)(chatroom_id, self.user.id)
 
             chatroom_list, has_notification = await database_sync_to_async(get_chatroom_list_and_nonification_type)(self.user.id)
 

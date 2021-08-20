@@ -7,8 +7,10 @@ from rest_framework.views import APIView
 
 from apps.proposal.models import Proposal
 
+from .constants import STATUS_TYPE
 from .models import Chatroom
-from .serializers import ChatroomCreateSerializer, ChatroomSerializer
+from .serializers import ChatroomCreateSerializer
+from .utils import prepare_chatroom_serializer
 
 ##
 # Chat room
@@ -18,15 +20,16 @@ from .serializers import ChatroomCreateSerializer, ChatroomSerializer
 class ChatroomDetailsAPIView(APIView):
     def get(self, request, pk):
         try:
-            user = self.request.user
+            user = request.user
             proposal_response = Chatroom.objects.get(
                 Q(pk=pk), Q(initiator=user) | Q(proposal_author=user))
-            serializer = ChatroomSerializer(proposal_response)
+            chatroom_serialized_data = prepare_chatroom_serializer(
+                proposal_response, user.id)
         except Exception:
             raise ParseError(_(f"{pk} is invalid chat room id."),
                              code='invalid_chatroom_id')
 
-        return Response(serializer.data, status=HTTP_200_OK)
+        return Response(chatroom_serialized_data, status=HTTP_200_OK)
 
 
 class ChatroomCreateAPIView(APIView):
@@ -72,41 +75,34 @@ class ChatroomCreateAPIView(APIView):
 
 
 class ChatroomChangeStatusAPIView(APIView):
-    _approve_status = 'approve'
-    _reject_status = 'reject'
-
-    def getStatusIndex(self, status):
-        if status == self._approve_status:
-            return 1
-        elif status == self._reject_status:
-            return 2
-        return 0
+    _approve_status = STATUS_TYPE['APPROVED']
+    _reject_status = STATUS_TYPE['REJECTED']
 
     def get(self, request, pk, status):
         # Check status
         if status != self._approve_status and status != self._reject_status:
-            raise ParseError(_('Status should be "approve" or "reject"'),
+            raise ParseError(_('Status should be "AP - approved" or "RJ - rejected"'),
                              code="cant_change_proposal_response_status")
 
-        try:
-            chatroom = Chatroom.objects.get(pk=pk)
+        # try:
+        chatroom = Chatroom.objects.get(pk=pk)
 
-            # Avoid changing status twice for same chatroom
-            if chatroom.status != 0:
-                # This error will chatched in except case
-                raise ParseError()
+        # Avoid changing status twice for same chatroom
+        if chatroom.status != STATUS_TYPE['IDLE']:
+            # This error will chatched in except case
+            raise ParseError()
 
-            # User which send request can't be author of proposal response (chat room)
-            if chatroom.initiator.id == request.user.id:
-                # This error will chatched in except case
-                raise ParseError()
+        # User which send request can't be author of proposal response (chat room)
+        if chatroom.initiator.id == request.user.id:
+            # This error will chatched in except case
+            raise ParseError()
 
-            serializer = ChatroomCreateSerializer(
-                instance=chatroom, data={'status': self.getStatusIndex(status)}, partial=True)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
+        serializer = ChatroomCreateSerializer(
+            instance=chatroom, data={'status': status}, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
-            return Response(serializer.data, status=HTTP_200_OK)
-        except Exception:
-            raise ParseError(_("Can't change status"),
-                             code="can_not_change_chatroom_open_status")
+        return Response(serializer.data, status=HTTP_200_OK)
+        # except Exception:
+        #     raise ParseError(_("Can't change status"),
+        #                      code="can_not_change_chatroom_open_status")
