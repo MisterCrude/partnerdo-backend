@@ -13,7 +13,7 @@ from .models import Chatroom
 def change_staus_handler(instance, created, **kwargs):
     if not created and not instance._is_status_changed and instance.status != STATUS_TYPE['IDLE']:
         channel_layer = get_channel_layer()
-        room_group_name = f'user_{instance.initiator.id}'
+        room_group_name = f'user_{instance.proposal_author.id}'
 
         chatroom = Chatroom.objects.filter(id=instance.id)
         chatroom.update(_is_status_changed=True)

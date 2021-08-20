@@ -93,7 +93,7 @@ class ChatroomChangeStatusAPIView(APIView):
             raise ParseError()
 
         # User which send request can't be author of proposal response (chat room)
-        if chatroom.initiator.id == request.user.id:
+        if chatroom.proposal_author.id == request.user.id:
             # This error will chatched in except case
             raise ParseError()
 
