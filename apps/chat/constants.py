@@ -14,7 +14,7 @@ NOTIFICATION_TYPE = {
     'IDLE': 'ID',
     'NEW_MESSAGE': 'NM',
     'CHANGE_STATUS': 'CS',
-    'CREATE_CHATROOM': 'CM',
+    'CREATE_CHATROOM': 'CC',
 }
 
 STATUS_TYPE = {

@@ -63,7 +63,7 @@ def get_participant_id_list(chatroom_id):
         return None
 
 
-def get_chatroom_list_and_nonification_type(user_id):
+def get_chatroom_list_and_nonification(user_id):
     try:
         chatrooms = Chatroom.objects.filter(
             Q(initiator__id=user_id) | Q(proposal_author__id=user_id))
@@ -95,24 +95,22 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
         await self.accept()
 
-        chatroom_list, has_notification = await database_sync_to_async(get_chatroom_list_and_nonification_type)(self.user.id)
+        chatroom_list, has_notification = await database_sync_to_async(get_chatroom_list_and_nonification)(self.user.id)
 
         await self.channel_layer.group_add(
             self.user_room_group_name,
             self.channel_name,
         )
 
-        await asyncio.gather(
-            self.channel_layer.group_send(
-                self.user_room_group_name,
-                {
-                    'message': {
-                        "chatroom_list": chatroom_list,
-                        "has_notification": has_notification
-                    },
-                    'type': MESSAGE_TYPE_LIST['CHATROOM_LIST'],
-                }),
-        )
+        await self.channel_layer.group_send(
+            self.user_room_group_name,
+            {
+                'message': {
+                    "chatroom_list": chatroom_list,
+                    "has_notification": has_notification
+                },
+                'type': MESSAGE_TYPE_LIST['CHATROOM_LIST'],
+            }),
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
@@ -132,7 +130,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
             await database_sync_to_async(reset_unread_message_amount_and_status_notification)(chatroom_id, self.user.id)
 
-            chatroom_list, has_notification = await database_sync_to_async(get_chatroom_list_and_nonification_type)(self.user.id)
+            chatroom_list, has_notification = await database_sync_to_async(get_chatroom_list_and_nonification)(self.user.id)
 
             await self.channel_layer.group_add(
                 room_group_name,
@@ -174,7 +172,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 content=new_message, author=self.user, chatroom=chatroom_instance)
 
             message_list = await database_sync_to_async(get_message_list)(chatroom_id)
-            chatroom_list, has_notification = await database_sync_to_async(get_chatroom_list_and_nonification_type)(participant_id)
+            chatroom_list, has_notification = await database_sync_to_async(get_chatroom_list_and_nonification)(participant_id)
 
             # Run async tasks concurrently
             await asyncio.gather(
