@@ -4,7 +4,7 @@ from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.db.models import Q
 
-from .constants import MESSAGE_TYPE_LIST, NOTIFICATION_TYPE
+from .constants import MESSAGE_TYPE_LIST, NOTIFICATION_TYPE, STATUS_TYPE
 from .models import Chatroom, Message
 from .serializers import MessageSerializer
 from .utils import prepare_chatroom_serializer
@@ -162,6 +162,11 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
             chatroom_instance_list = await database_sync_to_async(Chatroom.objects.filter)(pk=chatroom_id)
             chatroom_instance = await database_sync_to_async(chatroom_instance_list.get)()
+
+            # If satus dont changes don't allow send message
+            if chatroom_instance.status == STATUS_TYPE['IDLE']:
+                return None
+
             proposal_author_id, initiator_id = await database_sync_to_async(get_participant_id_list)(chatroom_id)
 
             participant_id = proposal_author_id if self.user.id == initiator_id else initiator_id

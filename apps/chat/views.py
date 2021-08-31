@@ -84,25 +84,24 @@ class ChatroomChangeStatusAPIView(APIView):
             raise ParseError(_('Status should be "AP - approved" or "RJ - rejected"'),
                              code="cant_change_proposal_response_status")
 
-        # try:
-        chatroom = Chatroom.objects.get(pk=pk)
+        try:
+            chatroom = Chatroom.objects.get(pk=pk)
 
-        # Avoid changing status twice for same chatroom
-        if chatroom.status != STATUS_TYPE['IDLE']:
-            # This error will chatched in except case
-            raise ParseError()
+            # Avoid changing status twice for same chatroom
+            if chatroom.status != STATUS_TYPE['IDLE']:
+                raise ParseError()
 
-        # User which send request can't be author of proposal response (chat room)
-        if chatroom.proposal_author.id == request.user.id:
-            # This error will chatched in except case
-            raise ParseError()
+            # Accept changing only from proposal author
+            if chatroom.proposal_author.id != request.user.id:
+                # No need to add description, because error will catchend in except block
+                raise ParseError()
 
-        serializer = ChatroomCreateSerializer(
-            instance=chatroom, data={'status': status}, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+            serializer = ChatroomCreateSerializer(
+                instance=chatroom, data={'status': status}, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
 
-        return Response(serializer.data, status=HTTP_200_OK)
-        # except Exception:
-        #     raise ParseError(_("Can't change status"),
-        #                      code="can_not_change_chatroom_open_status")
+            return Response(serializer.data, status=HTTP_200_OK)
+        except Exception:
+            raise ParseError(_("Can't change status"),
+                             code="can_not_change_chatroom_open_status")
