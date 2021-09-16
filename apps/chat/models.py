@@ -34,16 +34,21 @@ class Message(models.Model):
     def save(self, *args, **kwargs):
         if self._state.adding:
             chatroom_object_list = Chatroom.objects
-            initiator = chatroom_object_list.values_list(
-                'initiator', flat=True).get(id=self.chatroom.id)
+            proposal_author = chatroom_object_list.values_list(
+                'proposal_author', flat=True).get(id=self.chatroom.id)
             filtered = chatroom_object_list.filter(id=self.chatroom.id)
 
-            if initiator == self.author:
-                filtered.update(
-                    proposal_author_notification_type=NOTIFICATION_TYPE['NEW_MESSAGE'])
-            else:
+            print('proposal author', proposal_author, type(proposal_author))
+            print('message author', self.author.id, type(self.author.id))
+
+            if proposal_author == self.author.id:
+                print('initiator_notification_type')
                 filtered.update(
                     initiator_notification_type=NOTIFICATION_TYPE['NEW_MESSAGE'])
+            else:
+                print('proposal_author_notification_type')
+                filtered.update(
+                    proposal_author_notification_type=NOTIFICATION_TYPE['NEW_MESSAGE'])
 
         super(Message, self).save(*args, **kwargs)
 
