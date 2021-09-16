@@ -13,13 +13,17 @@ class ProposalFilter(filters.FilterSet):
         choices=GENDER_CHOICES, field_name='author__gender')
     categories = filters.CharFilter(method='filter_categories')
     city = filters.CharFilter(field_name='city__id')
-    city_area = filters.CharFilter(field_name='city_area__id')
+    city_areas = filters.CharFilter(field_name='city_area__id',
+                                    method='filter_city_areas')
     age = filters.CharFilter(method='filter_age')
     search = filters.CharFilter(method='filter_search')
 
     def filter_categories(self, queryset, name, value):
         category_ids = value.split(',')
         return queryset.filter(category__id__in=category_ids)
+
+    def filter_city_areas(self, queryset, name, value):
+        print(value)
 
     def filter_age(self, queryset, name, value):
         age_range = value.split(',')

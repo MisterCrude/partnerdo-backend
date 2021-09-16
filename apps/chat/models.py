@@ -1,6 +1,7 @@
 import uuid
 
 from django.conf import settings
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext as _
@@ -34,16 +35,21 @@ class Message(models.Model):
     def save(self, *args, **kwargs):
         if self._state.adding:
             chatroom_object_list = Chatroom.objects
-            initiator = chatroom_object_list.values_list(
-                'initiator', flat=True).get(id=self.chatroom.id)
+            proposal_author = chatroom_object_list.values_list(
+                'proposal_author', flat=True).get(id=self.chatroom.id)
             filtered = chatroom_object_list.filter(id=self.chatroom.id)
 
-            if initiator == self.author:
-                filtered.update(
-                    proposal_author_notification_type=NOTIFICATION_TYPE['NEW_MESSAGE'])
-            else:
+            print('proposal author', proposal_author, type(proposal_author))
+            print('message author', self.author.id, type(self.author.id))
+
+            if proposal_author == self.author.id:
+                print('initiator_notification_type')
                 filtered.update(
                     initiator_notification_type=NOTIFICATION_TYPE['NEW_MESSAGE'])
+            else:
+                print('proposal_author_notification_type')
+                filtered.update(
+                    proposal_author_notification_type=NOTIFICATION_TYPE['NEW_MESSAGE'])
 
         super(Message, self).save(*args, **kwargs)
 
@@ -86,7 +92,10 @@ class Chatroom(models.Model):
             self.proposal_author = self.proposal.author
             self.proposal_author_notification_type = NOTIFICATION_TYPE['CREATE_CHATROOM']
 
+        """
+        Save status for approve / reject user action
+        """
         if not self._state.adding and not self._is_status_changed and self.status != STATUS_TYPE['IDLE']:
-            self.proposal_author_notification_type = NOTIFICATION_TYPE['CHANGE_STATUS']
+            self.initiator_notification_type = NOTIFICATION_TYPE['CHANGE_STATUS']
 
         super(Chatroom, self).save(*args, **kwargs)

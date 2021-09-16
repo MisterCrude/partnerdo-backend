@@ -2,6 +2,7 @@ import asyncio
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from django.core.cache import cache
 from django.db.models import Q
 
 from .constants import MESSAGE_TYPE_LIST, NOTIFICATION_TYPE, STATUS_TYPE
@@ -95,6 +96,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
         await self.accept()
 
+        # Set logged_user_id global variable
+        cache.set('logged_user_id', str(self.user.id))
         chatroom_list, has_notification = await database_sync_to_async(get_chatroom_list_and_nonification)(self.user.id)
 
         await self.channel_layer.group_add(
