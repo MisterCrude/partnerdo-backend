@@ -50,10 +50,12 @@ class ChatroomCreateAPIView(APIView):
                              code='proposal_field_does_not_exist')
 
         proposal = Proposal.objects.get(pk=body_query_dict.get('proposal'))
-        initiator_id = str(body_query_dict.get('initiator'))
+
+        proposal_id = str(proposal.id)
+        initiator_id = body_query_dict.get('initiator')
 
         # Can't respond to same proposal twice
-        if Chatroom.objects.filter(Q(initiator__id=initiator_id), Q(id=proposal.id)).exists():
+        if Chatroom.objects.filter(Q(initiator__id=initiator_id), Q(proposal__id=proposal_id)).exists():
             raise ParseError(_("Can't respond to same proposal twice"),
                              code='can_not_respond_twice_for_same_proposal')
 

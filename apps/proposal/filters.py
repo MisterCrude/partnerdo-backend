@@ -9,45 +9,54 @@ from apps.proposal.models import Proposal
 
 
 class ProposalFilter(filters.FilterSet):
-    gender = filters.ChoiceFilter(
-        choices=GENDER_CHOICES, field_name='author__gender')
-    categories = filters.CharFilter(method='filter_categories')
-    city = filters.CharFilter(field_name='city__id')
-    city_areas = filters.CharFilter(field_name='city_area__id',
-                                    method='filter_city_areas')
-    age = filters.CharFilter(method='filter_age')
-    search = filters.CharFilter(method='filter_search')
+    gender = filters.ChoiceFilter(choices=GENDER_CHOICES, field_name="author__gender")
+    categories = filters.CharFilter(method="filter_categories")
+    city = filters.CharFilter(field_name="city__id")
+    city_areas = filters.CharFilter(
+        field_name="city_area__id", method="filter_city_areas"
+    )
+    age = filters.CharFilter(method="filter_age")
+    search = filters.CharFilter(method="filter_search")
 
     def filter_categories(self, queryset, name, value):
-        category_ids = value.split(',')
+        category_ids = value.split(",")
         return queryset.filter(category__id__in=category_ids)
 
     def filter_city_areas(self, queryset, name, value):
         print(value)
 
     def filter_age(self, queryset, name, value):
-        age_range = value.split(',')
+        age_range = value.split(",")
         current_year = datetime.datetime.now().year
 
-        if len(age_range) == 1 and re.match('[0-9]', age_range[0]):
+        if len(age_range) == 1 and re.match("[0-9]", age_range[0]):
             birth_year = current_year - int(age_range[0])
 
             return queryset.filter(author__birth_year__lt=birth_year)
 
-        if len(age_range) == 2 and re.match('[0-9]', age_range[1]) and re.match('[0-9]', age_range[0]):
+        if (
+            len(age_range) == 2
+            and re.match("[0-9]", age_range[1])
+            and re.match("[0-9]", age_range[0])
+        ):
             max_birth_year = current_year - int(age_range[0])
             min_birth_year = current_year - int(age_range[1])
 
-            return queryset.filter(Q(author__birth_year__gte=min_birth_year) & Q(author__birth_year__lte=max_birth_year))
+            return queryset.filter(
+                Q(author__birth_year__gte=min_birth_year)
+                & Q(author__birth_year__lte=max_birth_year)
+            )
 
         return queryset
 
     def filter_search(self, queryset, name, value):
         if value:
-            return queryset.filter(Q(title__icontains=value) | Q(description__icontains=value))
+            return queryset.filter(
+                Q(title__icontains=value) | Q(description__icontains=value)
+            )
 
         return queryset
 
     class Meta:
         model = Proposal
-        fields = ['gender', 'categories', 'city', 'age', 'search', 'author']
+        fields = ["gender", "categories", "city", "age", "search", "author"]
