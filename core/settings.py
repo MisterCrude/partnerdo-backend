@@ -2,10 +2,10 @@ import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = '*yq$p@6lvfeck6xlpu-j@4=p)@y60g&3k+q_$u+=h0-8!or472'
-DEBUG = True
+SECRET_KEY = os.environ.get('SECRET_KEY', 'some_secret_key')
+DEBUG = os.environ.get('DEBUG', False)
 
-ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'https://partnerdo.herokuapp.com/']
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOWED_ORIGINS = ['http://localhost:3000']
 
@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
